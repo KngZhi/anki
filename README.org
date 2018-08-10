@@ -1,0 +1,18 @@
+* Anki-util
+
+** TODO Road Map [%]
+- [ ] feature
+  - [ ] 通过 =AnkiConnect= 批量新增 Note
+  - [ ] 通过 =pangu.js= format 数据
+  - [ ] 自动获取英英的解释
+  - [ ] 通过 dict 来获取单词的正确原型
+- [ ] refactor
+  - [ ] 添加 eslint, prettier 工具来优化代码质量
+  - [ ] 优化工程目录
+  - [ ] 打包成一个全局的 npm 上传并可以下载并在本地使用
+  - [ ] 发布到 github 上
+- [ ] test
+- [ ] JXA
+  - [ ] 从外部引包(omniFocusLibrary.js)进来
+  - [ ] 将函数封装起来，而不是暴露在外面
+  - [ ] 优化执行效率

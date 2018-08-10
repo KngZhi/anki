@@ -1,0 +1,23 @@
+This may or may not be an acceptable #workaround
+larger apps became #marooned on previous versions as soon as the first major version change
+“However programming is a #design discipline, in a very special way.”
+Ready for their big‑screen #debut
+“At the same time, many people feel #ambivalent about their own memory.”
+“While Anki is an extremely simple program, it's possible to develop #virtuoso skill using Anki,”
+That is, Anki makes memory a choice, rather than a #haphazard event, to be left to chance”
+My somewhat #pious belief was that if people focused more on remembering the basics, and worried less about the “difficult” high-level issue…
+This has been the clearest and most #colloquial introductory explanation of ML ever, + with super fun
+As a concept, ARGV is a #convention in programming that goes back (at least) to the C language
+Node.js #couples JavaScript with an event loop for quickly dispatching opera- tions when events occur
+We’ll use supporting code throughout the book to make our programs more robust, more #scalable, and more manageable.
+it deserves #scrutiny since it takes advantage of a number of JavaScript and Node.js features
+[Aside from] having a #terser syntax than older function expressions, arrow functions have another big advantage over their ancestral counterparts
+#Shuttling data in this way can be a slow operation
+If your program could #conceivably continue about its business, then it’s better to take the safe route and stick to asynchronous I/O.
+However, by nature they’re #confined to the machine
+If you want to have some #leeway but still be a little more strict
+In computer networks, a reverse proxy is a type of proxy server that retrieves resources [on behalf of] a client from one or more servers.
+This is [by far] the preferred way to do I/O in Node.
+However, [by nature] they’re confined to the machine
+This test will pass [irrespective of] which of these methods you use to delay the second chunk
+But many of the choices needed in the design of such a system must be made in an [ad hoc] way
