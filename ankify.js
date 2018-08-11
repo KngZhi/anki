@@ -36,12 +36,10 @@ const createKeyPointCards = (tasks, deckName, modelName) => {
     deckName,
     modelName,
     fields: {
-      question: task.name,
-      answer: task.note,
-      note: task.note,
-      relative: task.note,
+      question: marked(task.name),
+      answer: marked(task.note),
     },
-    tags: ['aa'],
+    tags: [],
   }))
   return cards
 }
@@ -58,7 +56,7 @@ program
  * @argument {String} modelName   anki-note type
  */
 program
-  .command('omni')
+  .command('OmniFocus-word')
   .description('create notes directly from OmniFocus project')
   .action(() => {
     exec(`./lib/jxa-omni.js en`, async (err, stdout, stderr) => {
@@ -79,8 +77,7 @@ program
     exec(`./lib/jxa-omni.js ${projectName}`, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
-      const cards = createKeyPointCards(result, 'test', 'keypoint')
-      console.log(cards)
+      const cards = createKeyPointCards(result, projectName, 'keypoint')
       const res = await addNotes(cards)
       console.log(res)
     })
