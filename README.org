@@ -1,10 +1,12 @@
 * Anki-util
 
-** TODO Road Map [6%]
+** TODO Road Map [11%]
 - [-] feature
   - [X] 通过 =AnkiConnect= 批量新增 Note
+  - [-] 使用 =commander= 实现不同的数据引入方式
+    - [X] omni
+    - [ ] input file
   - [ ] 通过 dict 来获取单词的正确原型
-  - [ ] 使用 =commander= 实现不同的数据引入方式
 - [ ] refactor
   - [ ] 通过 =pangu.js= format 数据
   - [ ] 添加 eslint, prettier 工具来优化代码质量
