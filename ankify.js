@@ -7,6 +7,7 @@ const flow = require('lodash/flow')
 const formatOmniToMd = require('./lib/format')
 const path = process.argv[2] || './input.md'
 const { deriveWord } = require('./lib/dict')
+const { addNotes } = require('./lib/ankiConnect')
 
 const createCards = flow(
   contents => contents.split('\n===\n'),
@@ -46,8 +47,21 @@ function convertToJSON(path) {
 // convertToJSON('./input.md')
 
 const exec = require('child_process').exec
-exec('./lib/jxa-omni.js word', (err, stdout, stderr) => {
-  console.log(stdout)
+
+exec('./lib/jxa-omni.js word', async (err, stdout, stderr) => {
+  const result = JSON.parse(stdout)
+  const cards = result.map((task, idx) => ({
+    deckName: 'test',
+    modelName: 'double',
+    fields: {
+      word: deriveWord(task.name),
+      sentence: task.name,
+      meaning: task.note,
+    },
+    tags: [],
+  }))
+  const res = await addNotes(cards)
+  console.log(res)
 })
 
 // JSON -> anki type

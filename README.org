@@ -1,12 +1,12 @@
 * Anki-util
 
-** TODO Road Map [%]
-- [ ] feature
-  - [x] 通过 =AnkiConnect= 批量新增 Note
-  - [ ] 通过 =pangu.js= format 数据
-  - [ ] 自动获取英英的解释
+** TODO Road Map [6%]
+- [-] feature
+  - [X] 通过 =AnkiConnect= 批量新增 Note
   - [ ] 通过 dict 来获取单词的正确原型
+  - [ ] 使用 =commander= 实现不同的数据引入方式
 - [ ] refactor
+  - [ ] 通过 =pangu.js= format 数据
   - [ ] 添加 eslint, prettier 工具来优化代码质量
   - [ ] 优化工程目录
   - [ ] 打包成一个全局的 npm 上传并可以下载并在本地使用
