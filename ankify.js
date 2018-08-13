@@ -57,6 +57,7 @@ program
  */
 program
   .command('OmniFocus-word')
+  .alias('word')
   .description('create notes directly from OmniFocus project')
   .action(() => {
     exec(`./lib/jxa-omni.js en`, async (err, stdout, stderr) => {
@@ -116,3 +117,6 @@ function convertToJSON(path) {
 
 // convertToJSON('./input.md')
 
+if (!program.args.filter(arg => typeof arg === 'object').length) {
+  program.help()
+}
