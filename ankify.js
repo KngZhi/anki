@@ -6,6 +6,7 @@ const marked = require('marked')
 const pkg = require('./package.json')
 const flow = require('lodash/flow')
 const { deriveWord } = require('./lib/dict')
+const clozeWords = require('./lib/cloze')
 const { addNotes, getModelFieldNames } = require('./lib/ankiConnect')
 
 const createMdCards = flow(
@@ -64,6 +65,28 @@ program
       if (err) throw err
       const result = JSON.parse(stdout)
       const cards = createDoubleCard(result)
+      const res = await addNotes(cards)
+      console.log(res)
+    })
+  })
+
+program
+  .command('erratum')
+  .alias('err')
+  .description('create notes directly from erratum file')
+  .action(() => {
+    fs.readFile('/Users/KZhi/Desktop/erratum', 'utf8', async (err, data) => {
+      const erratum = clozeWords(data)
+      const cards = erratum.map(item => ({
+        deckName: 'erratum',
+        modelName: 'erratum',
+        fields: {
+          word: item.word,
+          meaning: item.meaning,
+          cloze: item.cloze,
+        },
+        tags: [],
+      }))
       const res = await addNotes(cards)
       console.log(res)
     })
