@@ -75,6 +75,7 @@ program
   .alias('err')
   .description('create notes directly from erratum file')
   .action(() => {
+    // cat 08-22.md | aspell pipe --encoding utf-8 | pcregrep -o1 "^.*: (.*?)," | uniq > ~/Desktop/erratum | code ~/Desktop/erratum
     fs.readFile('/Users/KZhi/Desktop/erratum', 'utf8', async (err, data) => {
       const erratum = clozeWords(data)
       const cards = erratum.map(item => ({

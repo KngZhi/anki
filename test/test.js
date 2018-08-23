@@ -6,18 +6,14 @@ const { deriveWord, retrieveMeanings } = require('../lib/dict')
 describe('deriveWord()', () => {
   it('should retrieve the word from given sentence by signal', () => {
     const STR0 = '';
-    const STR1 = 'this is #hello world';
-    const STR2 = 'this is #hello-world times';
-    const STR3 = 'this is [hello world]';
-    const STR4 = 'this is hello world';
+    const STR1 = 'this is `hello` world `this`';
+    const STR2 = 'this is `hello world`';
 
-    const ERR_MSG = 'NOSIGNAL';
+    const ERR_MSG = ['NOSIGNAL'];
 
-    expect(deriveWord(STR0)).to.deep.equal({ word: ERR_MSG, sentence: STR0 })
-    expect(deriveWord(STR1)).to.deep.equal({ word: 'hello', sentence: STR1 })
-    expect(deriveWord(STR2)).to.deep.equal({ word: 'hello-world', sentence: STR2 })
-    expect(deriveWord(STR3)).to.deep.equal({ word: 'hello world', sentence: STR3 })
-    expect(deriveWord(STR4)).to.deep.equal({ word: ERR_MSG, sentence: STR4 })
+    expect(deriveWord(STR0)).to.deep.equal(ERR_MSG)
+    expect(deriveWord(STR1)).to.deep.equal(['hello', 'this'])
+    expect(deriveWord(STR2)).to.deep.equal(['hello world'])
 
   });
 });
