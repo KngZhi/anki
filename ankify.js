@@ -19,12 +19,18 @@ const createMdCards = flow(
 
 
 const createDoubleCard = (tasks) => {
-  const cards = tasks.map(task => ({
+  const newTasks = []
+  tasks.forEach(task => {
+    const words = deriveWord(task.name)
+    words.forEach(word => newTasks.push({word, sentence: task.name, note: task.note}))
+  })
+
+  const cards = newTasks.map(task => ({
     deckName: 'big-bang',
     modelName: 'double',
     fields: {
-      word: deriveWord(task.name),
-      sentence: task.name,
+      word: task.word,
+      sentence: task.sentence,
       meaning: task.note,
     },
     tags: [],
