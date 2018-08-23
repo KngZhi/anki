@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs')
+const path = require('path')
 const exec = require('child_process').exec
 const program = require('commander')
 const marked = require('marked')
@@ -67,7 +68,8 @@ program
   .alias('word')
   .description('create notes directly from OmniFocus project')
   .action(() => {
-    exec(`./lib/jxa-omni.js en`, async (err, stdout, stderr) => {
+    const file = path.resolve(__dirname, `./lib/jxa-omni.js en`)
+    exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
       const cards = createDoubleCard(result)
@@ -105,7 +107,9 @@ program
   .description('create notes from OmniFocus know project')
   .action(() => {
     const projectName = 'big-bang'
-    exec(`./lib/jxa-omni.js ${projectName}`, async (err, stdout, stderr) => {
+    const file = path.resolve(__dirname, `./lib/jxa-omni.js ${projectName}` )
+    console.log(file)
+    exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
       const cards = createKeyPointCards(result, projectName, 'keypoint')
