@@ -6,9 +6,10 @@ const program = require('commander')
 const marked = require('marked')
 const pkg = require('./package.json')
 const flow = require('lodash/flow')
-const { getWords } = require('./lib/dict')
+const { getWords, createTaskByWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
+const { getTasks } = require('./lib/omni-sdk')
 
 const createMdCards = flow(
   contents => contents.split('\n===\n'),
@@ -59,6 +60,16 @@ program
   .version(pkg.version)
   .description(pkg.description)
   .usage('[options] <command> [..]')
+
+program
+  .command('pre-word')
+  .alias('pre')
+  .description('create text for further use')
+  .action(async() => {
+    const result = await getTasks('word')
+    console.log(result)
+
+  })
 
 /**
  * @description
