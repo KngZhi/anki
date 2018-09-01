@@ -8,7 +8,7 @@ const pkg = require('./package.json')
 const flow = require('lodash/flow')
 const { getWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
-const { addNotes, } = require('./lib/ankiConnect')
+const { addNotes, } = require('./lib/anki-sdk')
 
 const createMdCards = flow(
   contents => contents.split('\n===\n'),
@@ -17,6 +17,8 @@ const createMdCards = flow(
   cards => cards.map(card => card.join('\t')),
   cards => cards.join('\n'),
 )
+
+const OMNI_SDK = `./lib/omni-sdk.js`
 
 
 const createDoubleCard = (tasks) => {
@@ -68,7 +70,7 @@ program
   .alias('word')
   .description('create notes directly from OmniFocus project')
   .action(() => {
-    const file = path.resolve(__dirname, `./lib/jxa-omni.js word`)
+    const file = path.resolve(__dirname, `${OMNI_SDK} word`)
     exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
@@ -107,7 +109,7 @@ program
   .description('create notes from OmniFocus know project')
   .action(() => {
     const projectName = 'big-bang'
-    const file = path.resolve(__dirname, `./lib/jxa-omni.js ${projectName}` )
+    const file = path.resolve(__dirname, `${OMNI_SDK} ${projectName}` )
     exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)

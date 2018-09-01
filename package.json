@@ -17,7 +17,7 @@
     "xmldom": "^0.1.27"
   },
   "bin": {
-    "ankfy": "./ankify.js"
+    "ankfy": "./index.js"
   },
   "devDependencies": {
     "chai": "^4.1.2",
