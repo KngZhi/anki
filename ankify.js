@@ -6,9 +6,9 @@ const program = require('commander')
 const marked = require('marked')
 const pkg = require('./package.json')
 const flow = require('lodash/flow')
-const { deriveWord } = require('./lib/dict')
+const { getWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
-const { addNotes, getModelFieldNames } = require('./lib/ankiConnect')
+const { addNotes, } = require('./lib/ankiConnect')
 
 const createMdCards = flow(
   contents => contents.split('\n===\n'),
@@ -22,7 +22,7 @@ const createMdCards = flow(
 const createDoubleCard = (tasks) => {
   const newTasks = []
   tasks.forEach(task => {
-    const words = deriveWord(task.name)
+    const words = getWords(task.name)
     words.forEach(word => newTasks.push({word, sentence: task.name, note: task.note}))
   })
 
@@ -108,7 +108,6 @@ program
   .action(() => {
     const projectName = 'big-bang'
     const file = path.resolve(__dirname, `./lib/jxa-omni.js ${projectName}` )
-    console.log(file)
     exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
@@ -118,38 +117,7 @@ program
     })
   })
 
-program
-  .command('modelFields <modelName>')
-  .description('get the fields of specified note type from anki')
-  .action(async (modelName) => {
-    const result = await getModelFieldNames(modelName)
-    console.log(result)
-  })
-
-
 program.parse(process.argv)
-// const file = fs.readFileSync(path).toString()
-// const content = formatOmniToMd(file).join('')
-// fs.writeFileSync('./output.md', content, (err) => {
-//   if (err) throw err;
-// })
-// const cards = createCards(fs.readFileSync('./output.md').toString())
-// fs.writeFileSync('/Users/KZhi/Desktop/output.txt', cards, (err) => {
-//   if (err) throw err;
-// })
-
-// String -> .JSON
-function convertToJSON(path) {
-  const file = fs.readFileSync(path).toString()
-  const json = file.split('\n').map(sentence => ({
-    word: deriveWord(sentence),
-    sentence,
-    definition: '',
-  }))
-  fs.writeFileSync('./data.json', JSON.stringify(json, null, 2))
-}
-
-// convertToJSON('./input.md')
 
 if (!program.args.filter(arg => typeof arg === 'object').length) {
   program.help()

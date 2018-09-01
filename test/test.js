@@ -1,9 +1,9 @@
 const expect = require('chai').expect;
 const assert = require('chai').assert
-const { deriveWord, retrieveMeanings } = require('../lib/dict')
+const { getWords, retrieveMeanings } = require('../lib/dict')
 
 
-describe('deriveWord()', () => {
+describe('getWords()', () => {
   it('should retrieve the word from given sentence by signal', () => {
     const STR0 = '';
     const STR1 = 'this is `hello` world `this`';
@@ -11,9 +11,9 @@ describe('deriveWord()', () => {
 
     const ERR_MSG = ['NOSIGNAL'];
 
-    expect(deriveWord(STR0)).to.deep.equal(ERR_MSG)
-    expect(deriveWord(STR1)).to.deep.equal(['hello', 'this'])
-    expect(deriveWord(STR2)).to.deep.equal(['hello world'])
+    expect(getWords(STR0)).to.deep.equal(ERR_MSG)
+    expect(getWords(STR1)).to.deep.equal(['hello', 'this'])
+    expect(getWords(STR2)).to.deep.equal(['hello world'])
 
   });
 });
