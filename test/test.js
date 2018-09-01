@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const assert = require('chai').assert
-const { getWords, retrieveMeanings } = require('../lib/dict')
+const { getWords, retrieveMeanings, createTaskByWords } = require('../lib/dict')
 
 
 describe('getWords()', () => {
@@ -16,9 +16,7 @@ describe('getWords()', () => {
     expect(getWords(STR2)).to.deep.equal(['hello world'])
 
   });
-});
 
-describe('retrieveMeanings()', () => {
   it('should destruct all meanings from the give list of object ', () => {
     const LOS0 = []
     const LOS1 = [{ meanings: ['a'] }, { meanings: ['b'], senses: [] }]
@@ -29,4 +27,18 @@ describe('retrieveMeanings()', () => {
     assert.deepEqual(retrieveMeanings(LOS2), ['c', 'a', 'b'])
   });
 
+  it('should generate multi tasks according to multi key words', () => {
+    const l = []
+    const l0 = [{ name: 'test for some `thing`', note: '', context: '' }]
+    const l1 = [{ name: 'test `for` some `thing`', note: '', context: '' }]
+
+    assert.deepEqual(createTaskByWords(l), [])
+    assert.deepEqual(createTaskByWords(l0), [
+      { word: 'thing', sentence: l0[0].name, context: l0[0].context },
+    ])
+    assert.deepEqual(createTaskByWords(l1), [
+      { word: 'for', sentence: l1[0].name, context: l1[0].context },
+      { word: 'thing', sentence: l1[0].name, context: l1[0].context },
+    ])
+  });
 });
