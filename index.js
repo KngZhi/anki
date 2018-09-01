@@ -6,7 +6,7 @@ const program = require('commander')
 const marked = require('marked')
 const pkg = require('./package.json')
 const flow = require('lodash/flow')
-const { getWords, createTaskByWords } = require('./lib/dict')
+const { createTaskByWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
 const { getTasks } = require('./lib/omni-sdk')
@@ -23,19 +23,14 @@ const OMNI_SDK = `./lib/omni-sdk.js`
 
 
 const createDoubleCard = (tasks) => {
-  const newTasks = []
-  tasks.forEach(task => {
-    const words = getWords(task.name)
-    words.forEach(word => newTasks.push({word, sentence: task.name, note: task.note}))
-  })
-
-  const cards = newTasks.map(task => ({
+  const cards = tasks.map(task => ({
     deckName: 'big-bang',
     modelName: 'double',
     fields: {
-      word: task.word,
-      sentence: task.sentence,
-      meaning: task.note,
+      // ["`word`", word]
+      word: task.name.match(/`(.*)`/)[1],
+      sentence: marked(task.name),
+      meaning: marked(task.note),
     },
     tags: [],
   }))
@@ -67,8 +62,13 @@ program
   .description('create text for further use')
   .action(async() => {
     const result = await getTasks('word')
-    console.log(result)
-
+    const preNotes = createTaskByWords(result).map(task => {
+      let { word, sentence } = task
+      sentence = sentence.replace(/`/g, '').replace(word, `\`${word}\``)
+      return `- ${sentence}\n  ${word}\n`
+    }).join('\n')
+    const filepath = path.resolve(process.cwd(), 'word.md')
+    fs.writeFile(filepath, preNotes, () => exec(`code ${filepath}`) )
   })
 
 /**
@@ -80,15 +80,11 @@ program
   .command('OmniFocus-word')
   .alias('word')
   .description('create notes directly from OmniFocus project')
-  .action(() => {
-    const file = path.resolve(__dirname, `${OMNI_SDK} word`)
-    exec(file, async (err, stdout, stderr) => {
-      if (err) throw err
-      const result = JSON.parse(stdout)
-      const cards = createDoubleCard(result)
-      const res = await addNotes(cards)
-      console.log(res)
-    })
+  .action(async () => {
+    const result = await getTasks('word')
+    const cards = createDoubleCard(result)
+    const res = await addNotes(cards)
+    console.log(res)
   })
 
 program

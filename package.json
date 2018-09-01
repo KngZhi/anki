@@ -1,5 +1,5 @@
 {
-  "name": "k-utils",
+  "name": "ankify",
   "version": "1.0.0",
   "description": "For quickly make markdown to anki card",
   "main": "anki.js",
@@ -17,14 +17,15 @@
     "xmldom": "^0.1.27"
   },
   "bin": {
-    "ankfy": "./index.js"
+    "ankify": "./index.js"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^5.1.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test:w": "mocha -w"
   },
   "repository": {
     "type": "git",
