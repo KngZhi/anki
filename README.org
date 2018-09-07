@@ -1,5 +1,11 @@
 * Anki-util
 
+** DEBUG Road
+- =UnhandledPromiseRejectionWarning: TypeError: Cannot destructure property `result` of 'undefined' or 'null'.=
+    可能是因为服务器的端口被占用了.
+    - =lsof -i:8765= 这个是 AnkiConnect 的使用端口,查看是否被占用.
+    - 如果是则杀死改进程, 然后重启 Anki 即可 =kill ${lsof -t -i:8764}=
+
 ** TODO Road Map [11%]
 - [-] feature
   - [X] 通过 =AnkiConnect= 批量新增 Note
@@ -7,6 +13,8 @@
     - [X] omni
     - [ ] input file
   - [ ] 通过 dict 来获取单词的正确原型
+  - [ ] 等到卡片完全创建完毕之后再 complete tasks, 在 omni-sdk 中写一个新方法
+  - [ ] 可以通过传参的方式调用不同的函数
 - [ ] refactor
   - [ ] 通过 =pangu.js= format 数据
   - [ ] 添加 eslint, prettier 工具来优化代码质量

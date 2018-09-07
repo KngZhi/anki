@@ -5,21 +5,10 @@ const exec = require('child_process').exec
 const program = require('commander')
 const marked = require('marked')
 const pkg = require('./package.json')
-const flow = require('lodash/flow')
 const { createTaskByWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
 const { getTasks } = require('./lib/omni-sdk')
-
-const createMdCards = flow(
-  contents => contents.split('\n===\n'),
-  cards => cards.map(card => card.split('\n---\n')),
-  cards => cards.map(card => card.map(filed => marked(filed).replace(/\n/g, ''))),
-  cards => cards.map(card => card.join('\t')),
-  cards => cards.join('\n'),
-)
-
-const OMNI_SDK = `./lib/omni-sdk.js`
 
 
 // TODO: 应该在创建卡片完毕之后完成任务
@@ -50,10 +39,10 @@ const createDoubleCard = (tasks) => {
   return cards
 }
 
-const createKeyPointCards = (tasks, deckName, modelName) => {
+const createKeyPointCards = (tasks, deckName, ) => {
   const cards = tasks.map(task => ({
     deckName,
-    modelName,
+    modelName: 'keypoint',
     fields: {
       question: marked(task.name),
       answer: marked(task.note),
@@ -131,16 +120,12 @@ program
   .command('OmniFocus-big-bang')
   .alias('b2')
   .description('create notes from OmniFocus know project')
-  .action(() => {
+  .action(async () => {
     const projectName = 'big-bang'
-    const file = path.resolve(__dirname, `${OMNI_SDK} ${projectName}`)
-    exec(file, async (err, stdout, stderr) => {
-      if (err) throw err
-      const result = JSON.parse(stdout)
-      const cards = createKeyPointCards(result, projectName, 'keypoint')
-      const res = await addNotes(cards)
-      console.log(res)
-    })
+    const result = await getTasks(projectName)
+    const cards = createKeyPointCards(result, projectName,)
+    const res = await addNotes(cards)
+    console.log(res)
   })
 
 program.parse(process.argv)
