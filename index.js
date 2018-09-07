@@ -39,6 +39,31 @@ const createDoubleCard = (tasks) => {
   return cards
 }
 
+const createSingleCard = (tasks) => {
+    const cards = tasks.map(task => {
+        const { name, note } = task
+        const word = name.match(/`(.*)`/)[1]
+        try {
+            if (!word) {
+                throw Error(`This sentence doesn't have a word to create card: ${name}`)
+            }
+            return {
+                deckName: 'erratum',
+                modelName: 'toefl',
+                fields: {
+                    '正面': word,
+                    '背面': `${marked(note)}\n${marked(name)}`,
+                },
+                tags: [],
+            }
+        } catch (error) {
+            console.error(error)
+
+        }
+    })
+    return cards
+}
+
 const createKeyPointCards = (tasks, deckName, ) => {
   const cards = tasks.map(task => ({
     deckName,
@@ -79,12 +104,17 @@ program
  * @argument {String} modelName   anki-note type
  */
 program
-  .command('OmniFocus-word')
+  .command('OmniFocus-word [type]')
   .alias('word')
   .description('create notes directly from OmniFocus project')
-  .action(async () => {
+  .action(async (type) => {
     const result = await getTasks('word')
-    const cards = createDoubleCard(result)
+    let cards = []
+    if (type === '2') {
+        cards = createDoubleCard(result)
+    } else {
+        cards = createSingleCard(result)
+    }
     const res = await addNotes(cards)
     console.log(res)
   })
@@ -127,6 +157,17 @@ program
     const res = await addNotes(cards)
     console.log(res)
   })
+
+program
+    .command('toefl')
+    .description('create Anki notes from OmniFocus tofel project')
+    .action(async () => {
+        const projectName = 'toefl'
+        const result = await getTasks(projectName)
+        const cards = createKeyPointCards(result, projectName)
+        const res = await addNotes(cards)
+        console.log(res)
+    })
 
 program.parse(process.argv)
 
