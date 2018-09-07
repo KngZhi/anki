@@ -22,18 +22,31 @@ const createMdCards = flow(
 const OMNI_SDK = `./lib/omni-sdk.js`
 
 
+// TODO: 应该在创建卡片完毕之后完成任务
 const createDoubleCard = (tasks) => {
-  const cards = tasks.map(task => ({
-    deckName: 'big-bang',
-    modelName: 'double',
-    fields: {
-      // ["`word`", word]
-      word: task.name.match(/`(.*)`/)[1],
-      sentence: marked(task.name),
-      meaning: marked(task.note),
-    },
-    tags: [],
-  }))
+  const cards = tasks.map(task => {
+    const { name, note } = task
+    const word = name.match(/`(.*)`/)[1]
+    try {
+      if (!word) {
+        throw Error(`This sentence doesn't have a word to create card: ${name}`)
+      }
+      return {
+        deckName: 'big-bang',
+        modelName: 'double',
+        fields: {
+          // ["`word`", word]
+          word,
+          sentence: marked(name),
+          meaning: marked(note),
+        },
+        tags: [],
+      }
+    } catch (error) {
+      console.error(error)
+
+    }
+  })
   return cards
 }
 
@@ -60,7 +73,7 @@ program
   .command('pre-word')
   .alias('pre')
   .description('create text for further use')
-  .action(async() => {
+  .action(async () => {
     const result = await getTasks('word')
     const preNotes = createTaskByWords(result).map(task => {
       let { word, sentence } = task
@@ -68,7 +81,7 @@ program
       return `- ${sentence}\n  ${word}\n`
     }).join('\n')
     const filepath = path.resolve(process.cwd(), 'word.md')
-    fs.writeFile(filepath, preNotes, () => exec(`code ${filepath}`) )
+    fs.writeFile(filepath, preNotes, () => exec(`code ${filepath}`))
   })
 
 /**
@@ -107,6 +120,10 @@ program
       }))
       const res = await addNotes(cards)
       console.log(res)
+      exec('rm /Users/KZhi/Desktop/erratum', async (err, stdout) => {
+        if (err) throw err
+        console.log('delete success')
+      })
     })
   })
 
@@ -116,7 +133,7 @@ program
   .description('create notes from OmniFocus know project')
   .action(() => {
     const projectName = 'big-bang'
-    const file = path.resolve(__dirname, `${OMNI_SDK} ${projectName}` )
+    const file = path.resolve(__dirname, `${OMNI_SDK} ${projectName}`)
     exec(file, async (err, stdout, stderr) => {
       if (err) throw err
       const result = JSON.parse(stdout)
