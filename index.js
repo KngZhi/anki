@@ -12,7 +12,7 @@ const { getTasks } = require('./lib/omni-sdk')
 
 
 // TODO: 应该在创建卡片完毕之后完成任务
-const createDoubleCard = (tasks) => {
+const createWordCards = (tasks, modelName, deckName) => {
   const cards = tasks.map(task => {
     const { name, note } = task
     const word = name.match(/`(.*)`/)[1]
@@ -21,8 +21,8 @@ const createDoubleCard = (tasks) => {
         throw Error(`This sentence doesn't have a word to create card: ${name}`)
       }
       return {
-        deckName: 'big-bang',
-        modelName: 'double',
+        deckName,
+        modelName,
         fields: {
           // ["`word`", word]
           word,
@@ -49,7 +49,7 @@ const createSingleCard = (tasks) => {
             }
             return {
                 deckName: 'erratum',
-                modelName: 'toefl',
+                modelName: '',
                 fields: {
                     '正面': word,
                     '背面': `${marked(note)}\n${marked(name)}`,
@@ -104,17 +104,12 @@ program
  * @argument {String} modelName   anki-note type
  */
 program
-  .command('OmniFocus-word [type]')
+  .command('OmniFocus-word [type] [deckName]')
   .alias('word')
   .description('create notes directly from OmniFocus project')
-  .action(async (type) => {
+  .action(async (type = 'single', deckName = 'erratum') => {
     const result = await getTasks('word')
-    let cards = []
-    if (type === '2') {
-        cards = createDoubleCard(result)
-    } else {
-        cards = createSingleCard(result)
-    }
+    const cards = createWordCards(result, type, deckName)
     const res = await addNotes(cards)
     console.log(res)
   })
