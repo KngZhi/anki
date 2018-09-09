@@ -4,7 +4,10 @@ const path = require('path')
 const exec = require('child_process').exec
 const program = require('commander')
 const marked = require('marked')
+const chalk = require('chalk')
+
 const pkg = require('./package.json')
+const log = console.log
 const { createTaskByWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
@@ -107,11 +110,17 @@ program
   .command('OmniFocus-word [type] [deckName]')
   .alias('word')
   .description('create notes directly from OmniFocus project')
-  .action(async (type = 'single', deckName = 'erratum') => {
+  .action(async (modelName = 'single', deckName = 'erratum') => {
     const result = await getTasks('word')
-    const cards = createWordCards(result, type, deckName)
+    const cards = createWordCards(result, modelName, deckName)
     const res = await addNotes(cards)
-    console.log(res)
+    console.log(res);
+
+    if (res.filter(card => card !== null).length) {
+        log(chalk.green.bold(`Cards created in deck: ${deckName} by type: ${modelName}`))
+    } else {
+        log(chalk.red('Something goes wrong, please check the code or OmniFocus!'))
+    }
   })
 
 program
