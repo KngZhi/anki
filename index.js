@@ -18,7 +18,12 @@ const { getTasks } = require('./lib/omni-sdk')
 const createWordCards = (tasks, modelName, deckName) => {
   const cards = tasks.map(task => {
     const { name, note } = task
-    const word = name.match(/`(.*)`/)[1]
+    let word
+    if (!name.match(/`(.*)`/)) {
+        word = name
+    } else {
+        word = name.match(/`(.*)`/)[1]
+    }
     try {
       if (!word) {
         throw Error(`This sentence doesn't have a word to create card: ${name}`)
@@ -27,7 +32,6 @@ const createWordCards = (tasks, modelName, deckName) => {
         deckName,
         modelName,
         fields: {
-          // ["`word`", word]
           word,
           sentence: marked(name),
           meaning: marked(note),
@@ -95,7 +99,7 @@ program
     const preNotes = createTaskByWords(result).map(task => {
       let { word, sentence } = task
       sentence = sentence.replace(/`/g, '').replace(word, `\`${word}\``)
-      return `- ${sentence}\n  ${word}\n`
+      return `- ${sentence}\n  \n`
     }).join('\n')
     const filepath = path.resolve(process.cwd(), 'word.md')
     fs.writeFile(filepath, preNotes, () => exec(`code ${filepath}`))
