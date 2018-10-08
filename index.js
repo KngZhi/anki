@@ -5,6 +5,7 @@ const exec = require('child_process').exec
 const program = require('commander')
 const marked = require('marked')
 const chalk = require('chalk')
+const { dump } = require('dumper.js')
 
 const pkg = require('./package.json')
 const log = console.log
@@ -12,12 +13,15 @@ const { createTaskByWords } = require('./lib/dict')
 const clozeWords = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
 const { getTasks } = require('./lib/omni-sdk')
+const { fileParse } = require('./lib/taskpaper')
+const { getNullResults } = require('./lib/utils')
+const { askReCreate } = require('./lib/inquire')
 
 
 // TODO: 应该在创建卡片完毕之后完成任务
 const createWordCards = (tasks, modelName, deckName) => {
   const cards = tasks.map(task => {
-    const { name, note } = task
+    const { name, note, tags } = task
     let word
     if (!name.match(/`(.*)`/)) {
         word = name
@@ -29,6 +33,7 @@ const createWordCards = (tasks, modelName, deckName) => {
         throw Error(`This sentence doesn't have a word to create card: ${name}`)
       }
       return {
+        tags,
         deckName,
         modelName,
         fields: {
@@ -36,7 +41,6 @@ const createWordCards = (tasks, modelName, deckName) => {
           sentence: marked(name),
           meaning: marked(note),
         },
-        tags: [],
       }
     } catch (error) {
       console.error(error)
@@ -46,30 +50,6 @@ const createWordCards = (tasks, modelName, deckName) => {
   return cards
 }
 
-const createSingleCard = (tasks) => {
-    const cards = tasks.map(task => {
-        const { name, note } = task
-        const word = name.match(/`(.*)`/)[1]
-        try {
-            if (!word) {
-                throw Error(`This sentence doesn't have a word to create card: ${name}`)
-            }
-            return {
-                deckName: 'erratum',
-                modelName: '',
-                fields: {
-                    '正面': word,
-                    '背面': `${marked(note)}\n${marked(name)}`,
-                },
-                tags: [],
-            }
-        } catch (error) {
-            console.error(error)
-
-        }
-    })
-    return cards
-}
 
 const createKeyPointCards = (tasks, deckName, ) => {
   const cards = tasks.map(task => ({
@@ -153,6 +133,33 @@ program
       })
     })
   })
+
+program
+    .command('file <filename> [deckName] [modelName]')
+    .description('create notes directly from erratum file')
+    .action((filename, deckName = 'test', modelName = 'single') => {
+        const filepath = path.resolve(process.cwd(), filename)
+        fs.readFile(filepath, 'utf8', async (err, data) => {
+            const result = fileParse(data)
+            const cards = createWordCards(result, modelName, deckName)
+            const res = await addNotes(cards)
+            const nullResult = getNullResults(res, cards)
+            if (nullResult.length) {
+                const result = await askReCreate()
+                dump(result)
+                if (result.answer === 'y') {
+                    const newResult = nullResult.map((item, idx) => {
+                        item.fields.word += '_'
+                        item.tags.push('dp')
+                        return item
+                    })
+                    await addNotes(newResult)
+                }
+            }
+            console.log(res)
+        })
+    })
+
 
 program
   .command('OmniFocus-big-bang')
