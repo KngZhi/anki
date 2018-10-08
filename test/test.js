@@ -46,30 +46,37 @@ describe('getWords()', () => {
     });
 });
 
-describe('generate right context', () => {
-    const test =
-        `list-1 :
-- exhibit
-v. publicly display something in an art gallery or museum 展览，展出 = show; manifest clearly a quality behavior 呈现，显出 = reveal
-n. an object on public display 展览品 = exhibition
-- relatively
-adv. in comparison, or proportion to something else 相对来说 = comparatively; quite 相当 = fairly, rather
-- realistic
-adj. having or showing a sensible and practical idea of something 现实的，现实主义的 = practical; representing things in a way that is accurate and true to life 逼真的 = truthful
-list-2 :
-- exhibit
-v. publicly display something in an art gallery or museum 展览，展出 = show; manifest clearly a quality behavior 呈现，显出 = reveal
-n. an object on public display 展览品 = exhibition
-- relatively
-adv. in comparison, or proportion to something else 相对来说 = comparatively; quite 相当 = fairly, rather
-- realistic
-adj. having or showing a sensible and practical idea of something 现实的，现实主义的 = practical; representing things in a way that is accurate and true to life 逼真的 = truthful
-`
+describe('helper function in Utils', () => {
     it('should return the null word', () => {
         const nullList_0 = [123, null, 321]
         const nullList_1 = [null, null, 321]
         const cardList = [{ name: 'hello' }, { name: 'foo' }, { name: 'far' }]
         assert.deepEqual(getNullResults(nullList_0, cardList), [cardList[1]])
-        assert.deepEqual(getNullResults(nullList_1, cardList), [cardList[0],cardList[1]])
+        assert.deepEqual(getNullResults(nullList_1, cardList), [cardList[0], cardList[1]])
     });
 });
+
+// describe('task paper generate right results', () => {
+//     const test =
+//         `list-1 :
+// - exhibit
+// v. publicly
+// n. an object
+// - relatively
+// adv. in comparison
+// - realistic
+// adj. having
+// list-2 :
+// - exhibit
+// v. publicly
+// n. an object
+// `
+//     console.log(JSON.stringify(fileParse(test), null, 2))
+//     assert.deepEqual(fileParse(test), [
+//         { name: 'exhibit', tags: ['list-1'], note: 'v. publicly\nn. an object\n' },
+//         { name: 'relatively', tags: ['list-1'], note: 'adv. in comparison\n' },
+//         { name: 'realistic', tags: ['list-1'], note: 'adj. having\n' },
+//         { name: 'exhibit', tags: ['list-2'], note: 'v. publicly\nn. an object\n' },
+//     ])
+
+// });
