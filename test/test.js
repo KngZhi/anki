@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const assert = require('chai').assert
+const { dump } = require('dumper.js')
 const { getWords, retrieveMeanings, createTaskByWords } = require('../lib/dict')
 const { fileParse } = require('../lib/taskpaper')
 const { getNullResults } = require('../lib/utils')
@@ -56,27 +57,23 @@ describe('helper function in Utils', () => {
     });
 });
 
-// describe('task paper generate right results', () => {
-//     const test =
-//         `list-1 :
-// - exhibit
-// v. publicly
-// n. an object
-// - relatively
-// adv. in comparison
-// - realistic
-// adj. having
-// list-2 :
-// - exhibit
-// v. publicly
-// n. an object
-// `
-//     console.log(JSON.stringify(fileParse(test), null, 2))
-//     assert.deepEqual(fileParse(test), [
-//         { name: 'exhibit', tags: ['list-1'], note: 'v. publicly\nn. an object\n' },
-//         { name: 'relatively', tags: ['list-1'], note: 'adv. in comparison\n' },
-//         { name: 'realistic', tags: ['list-1'], note: 'adj. having\n' },
-//         { name: 'exhibit', tags: ['list-2'], note: 'v. publicly\nn. an object\n' },
-//     ])
+describe('task paper generate right results', () => {
+    const test =
+        `@tags(list1,list2) @modelName(single) @deckName(test):
+- exhibit
+v. publicly
+n. an object
+@tags(list-2):
+- foo
+v. far`
+    it('should return the right task', () => {
+        expect(fileParse(test)).to.be.deep.eq(
+            [
+                { name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
+                { name: 'foo', note: 'v. far\n', tags: ['list-2'],  }
+            ]
+        )
 
-// });
+    });
+
+});
