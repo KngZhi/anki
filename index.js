@@ -10,45 +10,12 @@ const { dump } = require('dumper.js')
 const pkg = require('./package.json')
 const log = console.log
 const { createTaskByWords } = require('./lib/dict')
-const clozeWords = require('./lib/cloze')
+const clozeWord = require('./lib/cloze')
 const { addNotes, } = require('./lib/anki-sdk')
 const { getTasks } = require('./lib/omni-sdk')
 const { fileParse } = require('./lib/taskpaper')
 const { getNullResults } = require('./lib/utils')
 const { askReCreate } = require('./lib/inquire')
-
-
-// TODO: 应该在创建卡片完毕之后完成任务
-const createWordCards = (tasks, modelName, deckName) => {
-  const cards = tasks.map(task => {
-    const { name, note, tags } = task
-    let word
-    if (!name.match(/`(.*)`/)) {
-        word = name
-    } else {
-        word = name.match(/`(.*)`/)[1]
-    }
-    try {
-      if (!word) {
-        throw Error(`This sentence doesn't have a word to create card: ${name}`)
-      }
-      return {
-        tags,
-        deckName,
-        modelName,
-        fields: {
-          word,
-          sentence: marked(name),
-          meaning: marked(note),
-        },
-      }
-    } catch (error) {
-      console.error(error)
-
-    }
-  })
-  return cards
-}
 
 
 const createKeyPointCards = (tasks, deckName, ) => {
@@ -158,6 +125,63 @@ program
             console.log(res)
         })
     })
+
+const createCards = (data) => {
+    const cards = data.map(task => {
+        const { name, note, tags, modelName, deckName } = task
+        const match = name.match(/`(.*)`/)
+        const notes = note.split('\n').filter(l => l !== '').map(l => marked(l)).join('')
+        const fieldsType = {
+            'single': {
+                word: match ? match[1] : name,
+                sentence: marked(name),
+                meaning: notes,
+            },
+            'keypoint': {
+                question: marked(name),
+                answer: notes,
+            },
+            'erratum': {
+                word: name,
+                meaning: note,
+                cloze: clozeWord(name),
+            }
+        }
+
+        return {
+            tags,
+            deckName,
+            modelName,
+            fields: fieldsType[modelName],
+        }
+    })
+    return cards
+}
+
+program
+    .command('file1 <filename> [deckName] [modelName]')
+    .description('create notes directly from erratum file')
+    .action((filename,) => {
+        const filepath = path.resolve(process.cwd(), filename)
+        fs.readFile(filepath, 'utf8', async (err, data) => {
+            const cards = createCards(fileParse(data))
+            const res = await addNotes(cards)
+            const nullResult = getNullResults(res, cards)
+            if (nullResult.length) {
+                const result = await askReCreate()
+                if (result.answer === 'y') {
+                    const newResult = nullResult.map(item => {
+                        item.fields.word += '_'
+                        item.tags.push('dp')
+                        return item
+                    })
+                    await addNotes(newResult)
+                }
+            }
+            console.log(res)
+        })
+    })
+
 
 
 program

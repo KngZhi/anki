@@ -4,6 +4,7 @@ const { dump } = require('dumper.js')
 const { getWords, retrieveMeanings, createTaskByWords } = require('../lib/dict')
 const { fileParse } = require('../lib/taskpaper')
 const { getNullResults } = require('../lib/utils')
+const marked = require('marked')
 
 
 
@@ -63,16 +64,17 @@ describe('task paper generate right results', () => {
 - exhibit
 v. publicly
 n. an object
-@tags(list-2):
+@tags(list-2) @modelName(keypoint) @deckName(test):
 - foo
 v. far`
     it('should return the right task', () => {
         expect(fileParse(test)).to.be.deep.eq(
             [
-                { name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
-                { name: 'foo', note: 'v. far\n', tags: ['list-2'],  }
+                { deckName: 'test', name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
+                { name: 'foo', deckName: 'test', modelName: 'keypoint', note: 'v. far\n', tags: ['list-2'],  }
             ]
         )
+
 
     });
 
