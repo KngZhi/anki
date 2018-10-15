@@ -137,6 +137,11 @@ const createCards = (data) => {
                 sentence: marked(name),
                 meaning: notes,
             },
+            'listen': {
+                word: match ? match[1] : name,
+                sentence: marked(name),
+                meaning: notes,
+            },
             'keypoint': {
                 question: marked(name),
                 answer: notes,
@@ -159,26 +164,27 @@ const createCards = (data) => {
 }
 
 program
-    .command('file1 <filename> [deckName] [modelName]')
+    .command('file1 <filename>')
     .description('create notes directly from erratum file')
     .action((filename,) => {
         const filepath = path.resolve(process.cwd(), filename)
         fs.readFile(filepath, 'utf8', async (err, data) => {
             const cards = createCards(fileParse(data))
             const res = await addNotes(cards)
-            const nullResult = getNullResults(res, cards)
+            console.log('initial result', res)
+            const nullResult = getNullResults(res, fileParse(data))
             if (nullResult.length) {
                 const result = await askReCreate()
                 if (result.answer === 'y') {
-                    const newResult = nullResult.map(item => {
-                        item.fields.word += '_'
-                        item.tags.push('dp')
-                        return item
-                    })
-                    await addNotes(newResult)
+                    const newResult = nullResult.map(item => ({
+                        ...item,
+                        name: item.name += '_',
+                        tags: [].concat(item.tags, 'dp'),
+                    }))
+                    const res = await addNotes(createCards(newResult))
+                    console.log('re-add result', res)
                 }
             }
-            console.log(res)
         })
     })
 

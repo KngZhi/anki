@@ -64,6 +64,8 @@ describe('task paper generate right results', () => {
 - exhibit
 v. publicly
 n. an object
+- hello
+v. foo
 @tags(list-2) @modelName(keypoint) @deckName(test):
 - foo
 v. far`
@@ -71,6 +73,7 @@ v. far`
         expect(fileParse(test)).to.be.deep.eq(
             [
                 { deckName: 'test', name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
+                { deckName: 'test', name: 'hello', note: 'v. foo\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
                 { name: 'foo', deckName: 'test', modelName: 'keypoint', note: 'v. far\n', tags: ['list-2'],  }
             ]
         )
