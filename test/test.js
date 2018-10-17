@@ -1,10 +1,7 @@
 const expect = require('chai').expect;
 const assert = require('chai').assert
-const { dump } = require('dumper.js')
 const { getWords, retrieveMeanings, createTaskByWords } = require('../lib/dict')
-const { fileParse } = require('../lib/taskpaper')
 const { getNullResults } = require('../lib/utils')
-const marked = require('marked')
 
 
 
@@ -58,27 +55,3 @@ describe('helper function in Utils', () => {
     });
 });
 
-describe('task paper generate right results', () => {
-    const test =
-        `@tags(list1,list2) @modelName(single) @deckName(test):
-- exhibit
-v. publicly
-n. an object
-- hello
-v. foo
-@tags(list-2) @modelName(keypoint) @deckName(test):
-- foo
-v. far`
-    it('should return the right task', () => {
-        expect(fileParse(test)).to.be.deep.eq(
-            [
-                { deckName: 'test', name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
-                { deckName: 'test', name: 'hello', note: 'v. foo\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test'},
-                { name: 'foo', deckName: 'test', modelName: 'keypoint', note: 'v. far\n', tags: ['list-2'],  }
-            ]
-        )
-
-
-    });
-
-});
