@@ -83,6 +83,11 @@ const createCards = (data) => {
         const match = name.match(/`(.*)`/)
         const notes = note.split('\n').filter(l => l !== '').map(l => marked(l)).join('<br>')
         const fieldsType = {
+            'toefl': {
+                word: match ? match[1] : name,
+                sentence: name,
+                meaning: notes,
+            },
             'single': {
                 word: match ? match[1] : name,
                 // sentence: marked(name),
