@@ -11,7 +11,7 @@ const { dump } = require('dumper.js')
 const pkg = require('./package.json')
 const log = console.log
 const { createTaskByWords } = require('./lib/dict')
-const clozeWord = require('./lib/cloze')
+const { clozeWord, createCloze } = require('./lib/cloze')
 const { addNotes, findNotes, getNotesInfo, updateNoteFields, addTags, updateNotes } = require('./lib/anki-sdk')
 const { getTasks } = require('./lib/omni-sdk')
 const { fileParse } = require('./lib/taskpaper')
@@ -107,6 +107,10 @@ const createCards = (data) => {
                 word: name,
                 meaning: note,
                 cloze: clozeWord(name),
+            },
+            cloze: {
+                front: name,
+                back: note,
             }
         }
 
