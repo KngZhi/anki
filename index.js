@@ -125,7 +125,7 @@ const createCards = (data) => {
 }
 
 program
-    .command('file1 <filename>')
+    .command('file <filename>')
     .description('create notes directly from erratum file')
     .action((filename, ) => {
         const filepath = path.resolve(process.cwd(), filename)
