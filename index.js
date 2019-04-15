@@ -27,8 +27,6 @@ const { getNullResults } = require("./lib/utils");
 const { askReCreate } = require("./lib/inquire");
 const { chunk, take, flattenDeep } = require("lodash");
 
-let readdir = promisify(fs.readdir);
-
 const createKeyPointCards = (tasks, deckName) => {
     const cards = tasks.map(task => ({
         deckName,
@@ -129,11 +127,11 @@ const createCards = data => {
             erratum: {
                 word: name,
                 meaning: note,
-                cloze: clozeWord(name)
+                cloze: clozeWord(name),
             },
             cloze: {
                 front: name,
-                back: note
+                back: note,
             }
         };
 
@@ -152,7 +150,7 @@ program
     .description("create notes directly from erratum file")
     .action(async filename => {
         const filepath = path.resolve(process.cwd(), filename);
-        if (fs.lstatSync(filepath).isFile())
+        if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
         fs.readFile(filepath, "utf8", async (err, data) => {
             const cards = createCards(fileParse(data));
