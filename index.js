@@ -148,7 +148,7 @@ const createCards = data => {
 program
     .command("file <filename>")
     .description("create notes directly from erratum file")
-    .action(async filename => {
+    .action(async filename =>{
         const filepath = path.resolve(process.cwd(), filename);
         if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
