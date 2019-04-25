@@ -38,6 +38,44 @@ v. far`
         ]);
     });
 
+    it("should return the right block note", () => {
+        const L0 = `:::keypoint
+        this is new world to run until it hit the block
+        --
+        this is the need point
+        :::
+        `;
+
+        const L1 = `:::toefl
+        Word: this
+        Meaning: hello world
+
+        this is the new world
+        Usage: this is the the test
+        :::`
+
+        expect(fileParse(L0).to.deep.eq([
+            {
+                front: "this is new world to run until it hit the block",
+                back: "this is the need point",
+                modelName: "keypoint",
+                tags: []
+            }
+        ]));
+
+        expect(
+            fileParse(L1).to.deep.eq([
+                {
+                    word: "this",
+                    meaning: "hello world\n\nthis is the new world",
+                    modelName: "toefl",
+                    usage: 'this is the test',
+                    tags: []
+                }
+            ])
+        );
+    });
+
 
     it('should return the right name and value of field', () => {
         test = '## hello @tags(list1,list2) @modelName(single) @deckName(test):'
