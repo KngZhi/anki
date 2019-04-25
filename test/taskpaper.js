@@ -16,13 +16,26 @@ v. far`
     it('should return the right task', () => {
         expect(fileParse(test)).to.be.deep.eq(
             [
-                { deckName: 'test', name: 'exhibit', note: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test' },
-                { deckName: 'test', name: 'hello', note: 'v. foo\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test' },
-                { name: 'foo', deckName: 'test', modelName: 'keypoint', note: 'v. far\n', tags: ['list-2'], }
+                { deckName: 'test', front: 'exhibit', back: 'v. publicly\nn. an object\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test' },
+                { deckName: 'test', front: 'hello', back: 'v. foo\n', tags: ['list1', 'list2'], modelName: 'single', deckName: 'test' },
+                { front: 'foo', deckName: 'test', modelName: 'keypoint', back: 'v. far\n', tags: ['list-2'], }
             ]
         )
 
 
+    });
+
+    it("should return the right cloze", () => {
+        test = "- hello world {{some}} thing like this\nhello\n";
+
+        expect(fileParse(test)).to.deep.eq([
+            {
+                front: "hello world {{c1::some}} thing like this",
+                back: "hello\n\n",
+                modelName: 'cloze',
+                tags: [],
+            }
+        ]);
     });
 
 
@@ -34,8 +47,9 @@ v. far`
 
         test = '## hello @modelName(single) @deckName(test):'
         expect(getFields(test)).to.be.deep.eq(
-            { deckName: 'test', tags: [], modelName: 'single', }
+            { deckName: 'test', modelName: 'single', }
         )
     });
+
 
 });
