@@ -9,6 +9,17 @@ const chalk = require("chalk");
 const stringSimilarity = require("string-similarity");
 const { dump } = require("dumper.js");
 
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    highlight: function(code) {
+        return require("highlight.js").highlightAuto(code).value;
+    },
+    gfm: true,
+    tables: true,
+    breaks: true,
+});
+
+
 const pkg = require("./package.json");
 const log = console.log;
 const { createTaskByWords } = require("./lib/dict");
@@ -96,50 +107,19 @@ program
 
 const createCards = data => {
     const cards = data.map(task => {
-        const { name, note, tags, modelName, deckName } = task;
-        const match = name.match(/`(.*)`/);
-        const notes = note
-            .split("\n")
-            .filter(l => l !== "")
-            .map(l => marked(l))
-            .join("<br>");
-        const fieldsType = {
-            toefl: {
-                word: match ? match[1] : name,
-                sentence: name,
-                meaning: notes
-            },
-            single: {
-                word: match ? match[1] : name,
-                // sentence: marked(name),
-                sentence: name,
-                meaning: notes
-            },
-            listen: {
-                word: match ? match[1] : name,
-                sentence: marked(name),
-                meaning: notes
-            },
-            keypoint: {
-                question: marked(name),
-                answer: marked(note)
-            },
-            erratum: {
-                word: name,
-                meaning: note,
-                cloze: clozeWord(name),
-            },
-            cloze: {
-                front: name,
-                back: note,
-            }
-        };
+        const { tags, modelName, deckName, ...fields } = task;
+
+        if (modelName !== 'toefl') {
+            Object.keys(fields).forEach(key => {
+                fields[key] = marked(fields[key]);
+            });
+        }
 
         return {
             tags,
             deckName,
             modelName,
-            fields: fieldsType[modelName]
+            fields,
         };
     });
     return cards;
@@ -153,21 +133,12 @@ program
         if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
         fs.readFile(filepath, "utf8", async (err, data) => {
-            const cards = createCards(fileParse(data));
-            const res = await addNotes(cards);
-            console.log("initial result", res);
-            const nullResult = getNullResults(res, fileParse(data));
-            if (nullResult.length) {
-                const result = await askReCreate();
-                if (result.answer === "y") {
-                    const newResult = nullResult.map(item => ({
-                        ...item,
-                        name: (item.name += "_"),
-                        tags: [].concat(item.tags, "dp")
-                    }));
-                    const res = await addNotes(createCards(newResult));
-                    console.log("re-add result", res);
-                }
+            try {
+                const cards = createCards(fileParse(data));
+                const res = await addNotes(cards);
+                console.log("initial result", res);
+            } catch (error) {
+                console.error(error);
             }
         });
     });
