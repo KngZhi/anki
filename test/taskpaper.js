@@ -19,7 +19,7 @@ v. far`;
                 front: "exhibit",
                 back: "v. publicly\nn. an object\n",
                 tags: ["list1", "list2"],
-                modelName: "single",
+                modelName: "keypoint",
                 deckName: "test"
             },
             {
@@ -27,7 +27,7 @@ v. far`;
                 front: "hello",
                 back: "v. foo\n",
                 tags: ["list1", "list2"],
-                modelName: "single",
+                modelName: "keypoint",
                 deckName: "test"
             },
             {
@@ -93,4 +93,21 @@ v. far`;
             modelName: "single"
         });
     });
+});
+
+describe('some conflict edge case', () => {
+  it("if the `-` note type encounter the ` symbol it will resolve", () => {
+    test = `@modelName(keypoint)\n\n- this is the \`new\` world\n\ndef: new\n\n- what's your name\nmy name is jack`
+
+    expect(fileParse(test)).to.be.deep.eq([
+      { word: "new", meaning: "\n\ndef: new\n\n\n", tags:[], modelName: 'toefl', sentence: "this is the new world" },
+      {
+        front: "what's your name",
+        back: "my name is jack\n",
+        modelName: "keypoint",
+        tags: []
+      }
+    ])
+  });
+
 });
