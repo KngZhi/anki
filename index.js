@@ -57,22 +57,36 @@ program
     .usage("[options] <command> [..]");
 
 program
-    .command("pre-word")
+    .command("pre-word <filename>")
     .alias("pre")
     .description("create text for further use")
-    .action(async () => {
-        const result = await getTasks("word");
-        const preNotes = createTaskByWords(result)
-            .map(task => {
-                let { word, sentence } = task;
-                sentence = sentence
-                    .replace(/`/g, "")
-                    .replace(word, `\`${word}\``);
-                return `- ${sentence}\n  \n`;
+    .action(async filename => {
+        const result = await asyncFile(getFilePath(filename), "utf8");
+        const preNotes = result.split("\n\n").filter(l => !l.includes('@')).map(sentence => {
+            const words = getWords(sentence);
+            return words.map(word => ({ word, sentence }));
+        })
+            .reduce((res, val) => res.concat(val), [])
+            .map(task => ({ ...task, sentence: task.sentence.replace(/`/g, '')}))
+        const failedList = []
+        try {
+            const final = await asynces.mapSeries(preNotes, async (note) => {
+                try {
+                    const { word, sentence, } = note
+                    console.log('current query word: ', word)
+                    const shortdef = (await queryDef(word)).slice(0, 3).reduce((defs, item) => defs.concat(item.shortdef), [])
+                    return { word, sentence, shortdef}
+                } catch (error) {
+                    console.error('something error', error)
+                    failedList.push(note)
+                }
             })
-            .join("\n");
-        const filepath = path.resolve(process.cwd(), "word.md");
-        fs.writeFile(filepath, preNotes, () => exec(`code ${filepath}`));
+
+            const output = final.map(item => `${item.sentence}\n\n${item.shortdef.join('\n')}`).join('\n\n')
+            fs.writeFile(getFilePath(filename), output, () => exec(`code ${getFilePath(filename)}`));
+        } catch (error) {
+           console.log(error)
+        }
     });
 
 /**
