@@ -7,7 +7,11 @@ const program = require("commander");
 const marked = require("marked");
 const chalk = require("chalk");
 const stringSimilarity = require("string-similarity");
-const { dump } = require("dumper.js");
+const asynces = require('async')
+
+const asyncFile = promisify(fs.readFile);
+
+const getFilePath = filename => path.resolve(process.cwd(), filename);
 
 marked.setOptions({
     renderer: new marked.Renderer(),
@@ -16,27 +20,21 @@ marked.setOptions({
     },
     gfm: true,
     tables: true,
-    breaks: true,
+    breaks: true
 });
-
 
 const pkg = require("./package.json");
 const log = console.log;
-const { createTaskByWords } = require("./lib/dict");
-const { clozeWord, createCloze } = require("./lib/cloze");
+const { getWords, } = require("./lib/dict");
+const { queryDef } = require('./lib/query-dict')
 const {
     addNotes,
     findNotes,
     getNotesInfo,
-    updateNoteFields,
-    addTags,
     updateNotes
 } = require("./lib/anki-sdk");
 const { getTasks } = require("./lib/omni-sdk");
 const { fileParse } = require("./lib/taskpaper");
-const { getNullResults } = require("./lib/utils");
-const { askReCreate } = require("./lib/inquire");
-const { chunk, take, flattenDeep } = require("lodash");
 
 const createKeyPointCards = (tasks, deckName) => {
     const cards = tasks.map(task => ({
@@ -123,7 +121,7 @@ const createCards = data => {
     const cards = data.map(task => {
         const { tags, modelName, deckName, ...fields } = task;
 
-        if (modelName !== 'toefl') {
+        if (modelName !== "toefl") {
             Object.keys(fields).forEach(key => {
                 fields[key] = marked(fields[key]);
             });
@@ -133,7 +131,7 @@ const createCards = data => {
             tags,
             deckName,
             modelName,
-            fields,
+            fields
         };
     });
     return cards;
@@ -142,7 +140,7 @@ const createCards = data => {
 program
     .command("file <filename>")
     .description("create notes directly from erratum file")
-    .action(async filename =>{
+    .action(async filename => {
         const filepath = path.resolve(process.cwd(), filename);
         if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
@@ -163,17 +161,6 @@ program
     .description("create notes from OmniFocus know project")
     .action(async () => {
         const projectName = "big-bang";
-        const result = await getTasks(projectName);
-        const cards = createKeyPointCards(result, projectName);
-        const res = await addNotes(cards);
-        console.log(res);
-    });
-
-program
-    .command("toefl")
-    .description("create Anki notes from OmniFocus tofel project")
-    .action(async () => {
-        const projectName = "toefl";
         const result = await getTasks(projectName);
         const cards = createKeyPointCards(result, projectName);
         const res = await addNotes(cards);

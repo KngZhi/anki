@@ -4,7 +4,7 @@
   "description": "For quickly make markdown to anki card",
   "main": "anki.js",
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^3.0.1",
     "async-request": "^1.2.0",
     "axios": "^0.16.2",
     "chalk": "^2.4.1",
