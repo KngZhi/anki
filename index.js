@@ -2,12 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
-const { promisify } = require("util");
 const program = require("commander");
 const marked = require("marked");
 const chalk = require("chalk");
-const stringSimilarity = require("string-similarity");
-const { dump } = require("dumper.js");
 
 marked.setOptions({
     renderer: new marked.Renderer(),
