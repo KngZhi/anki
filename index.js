@@ -2,7 +2,6 @@
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
-const { promisify } = require("util");
 const program = require("commander");
 const marked = require("marked");
 const chalk = require("chalk");
@@ -15,7 +14,7 @@ const getFilePath = filename => path.resolve(process.cwd(), filename);
 
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function(code) {
+    highlight: function (code) {
         return require("highlight.js").highlightAuto(code).value;
     },
     gfm: true,
@@ -119,7 +118,7 @@ program
 
 const createCards = data => {
     const cards = data.map(task => {
-        const { tags, modelName, deckName, ...fields } = task;
+        const { tags, modelName, deckName, options, ...fields } = task;
 
         if (modelName !== "toefl") {
             Object.keys(fields).forEach(key => {
@@ -131,7 +130,8 @@ const createCards = data => {
             tags,
             deckName,
             modelName,
-            fields
+            fields,
+            options,
         };
     });
     return cards;
@@ -166,6 +166,33 @@ program
         const res = await addNotes(cards);
         console.log(res);
     });
+
+program
+    .command("toefl")
+    .description("create Anki notes from OmniFocus tofel project")
+    .action(async () => {
+        const projectName = "toefl";
+        const result = await getTasks(projectName);
+        const cards = createKeyPointCards(result, projectName);
+        const res = await addNotes(cards);
+        console.log(res);
+    });
+
+program
+    .command('pipe')
+    .action(() => {
+        process.stdin.resume();
+        process.stdin.setEncoding('utf8');
+        let result = ''
+        process.stdin.on('data', function (data) {
+            result += data
+        });
+        process.stdin.on('end', async () => {
+            const json = JSON.parse(result)
+            const res = await addNotes(json)
+            console.log(res)
+        })
+    })
 
 program
     .command("update <query>")

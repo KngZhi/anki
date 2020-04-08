@@ -1,42 +1,28 @@
-@deckName(test) @tag(math,def):
+@deckName(test) @tags(tv):
 
-- what the meaning of **median** measurement?
-the median is a measure of central tendency that is fairly unaffected by unusually high or low values relative to the rest of the data.
+:::
+Word:: bellicose
 
-- how to calc **median**?
-1. order number for least to greatest.
-1. odd? -> middle; even -> avg of two middle numbers
+Meaning::  Warlike, aggressive, quarrelsome.
 
-- what the meaning of **mode**?
-The **mode** of a list of numbers is the number that occurs most frequently in the list.
+sentence:: The more bellicose party always got elected whenever there was tension along the border and the public believed that military action would lead to security.
 
-e.g., the list 1, 2, 3, 3, 3, 5, 7, 10, 10, 10, 20 has two modes, 3 and 10.
+usage:: Since *bellicose* describes an attitude that hopes for actual war, the Word: is generally applied to nations and their leaders. In the 20th century, it was commonly used to describe such figures as Germany's Kaiser Wilhelm, Italy's Benito Mussolini, and Japan's General Tojo, leaders who believed their countries had everything to gain by starting wars. The international relations of a nation with a bellicose foreign policy tend to be stormy and difficult, and *bellicosity* usually makes the rest of the world very uneasy.
 
-- **range** can reflect the {{maximum spread}} of the data?
+:::
 
-- Measures of **dispersion** indicate the {{degree of “spread”}} of the data.
+- *bellicose* often applied to which kinds of subjects?
 
-given the list 11, 10, 5, 13, 21, the range of the numbers is.
+Since *bellicose* describes an attitude that hopes for actual war, the Word: is generally applied to nations and their leaders.
 
-- what's the meaning of **standard deviation**?
+Such as: Germany's Kaiser Wilhelm, Italy's Benito Mussolini
 
-the standard deviation is a measure of spread that depends on each number in the list.
+:::
+Word:: belligerence
 
-- the more the data are spread away from the mean, the {{greater}} the standard deviation; and vice versa;
+Meaning::  Aggressiveness, combativeness.
 
-- *In any group of data*, most of the data are within about {{3}} standard deviations above or below the mean.
+sentence:: The belligerence in Turner's voice told them that the warning was a serious threat.
 
-- A set that has no members is called the empty set and is denoted by the symbol {{\\(\\emptyset\)}}.
-
-- diff between *set* and *list*?
-1. in list, members are **ordered**
-2. elements can be repeated in a list and the repetitions matter.
-
-- For any finite set *S*, the number of elements of *S* is denoted by {{*|S|*}}
-
-\\(S = \\{ 6.2, - 9, \pi, 0.01, 0 \\}\\) -> \\(|S| = 5\\)
-
-- give the expression of permutations of *n* objects taken *k* at a time
-
-\\[ \frac{n!}{(n - k)!} \\]
-
+usage:: Unlike *bellicose* and *bellicosity*, the Word: *belligerence* can be used at every level from the personal to the global. The belligerence of Marlon Brando's performances as the violent Stanley Kowalski in *A Streetcar Named Desire* electrified the country in the 1940s and '50s. At the same time, *belligerent* speeches by leaders of the Soviet Union and the ## United States throughout the Cold War were keeping the world on edge. *Belligerent* is even a noun; the terrible war in the Congo in recent years, for example, has involved seven nations as belligerents.
+:::
