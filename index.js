@@ -8,7 +8,7 @@ const chalk = require("chalk");
 
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function(code) {
+    highlight: function (code) {
         return require("highlight.js").highlightAuto(code).value;
     },
     gfm: true,
@@ -104,7 +104,7 @@ program
 
 const createCards = data => {
     const cards = data.map(task => {
-        const { tags, modelName, deckName, ...fields } = task;
+        const { tags, modelName, deckName, options, ...fields } = task;
 
         if (modelName !== 'toefl') {
             Object.keys(fields).forEach(key => {
@@ -117,6 +117,7 @@ const createCards = data => {
             deckName,
             modelName,
             fields,
+            options,
         };
     });
     return cards;
@@ -125,7 +126,7 @@ const createCards = data => {
 program
     .command("file <filename>")
     .description("create notes directly from erratum file")
-    .action(async filename =>{
+    .action(async filename => {
         const filepath = path.resolve(process.cwd(), filename);
         if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
@@ -162,6 +163,22 @@ program
         const res = await addNotes(cards);
         console.log(res);
     });
+
+program
+    .command('pipe')
+    .action(() => {
+        process.stdin.resume();
+        process.stdin.setEncoding('utf8');
+        let result = ''
+        process.stdin.on('data', function (data) {
+            result += data
+        });
+        process.stdin.on('end', async () => {
+            const json = JSON.parse(result)
+            const res = await addNotes(json)
+            console.log(res)
+        })
+    })
 
 program
     .command("update <query>")
