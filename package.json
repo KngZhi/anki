@@ -14,7 +14,7 @@
     "follow-redirects": "^1.4.1",
     "inquirer": "^6.2.0",
     "is-buffer": "^1.1.6",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "marked": "^0.6.2",
     "ms": "^2.0.0",
     "mw-dict": "^3.0.0",
