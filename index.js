@@ -67,7 +67,7 @@ program
             return words.map(word => ({ word, sentence }));
         })
             .reduce((res, val) => res.concat(val), [])
-            .map(task => ({ ...task, sentence: task.sentence.replace(/`/g, '')}))
+            .map(task => ({ ...task, sentence: task.sentence.replace(/`/g, '') }))
         const failedList = []
         try {
             const final = await asynces.mapSeries(preNotes, async (note) => {
@@ -75,7 +75,7 @@ program
                     const { word, sentence, } = note
                     console.log('current query word: ', word)
                     const shortdef = (await queryDef(word)).slice(0, 3).reduce((defs, item) => defs.concat(item.shortdef), [])
-                    return { word, sentence, shortdef}
+                    return { word, sentence, shortdef }
                 } catch (error) {
                     console.error('something error', error)
                     failedList.push(note)
@@ -85,38 +85,26 @@ program
             const output = final.map(item => `${item.sentence}\n\n${item.shortdef.join('\n')}`).join('\n\n')
             fs.writeFile(getFilePath(filename), output, () => exec(`code ${getFilePath(filename)}`));
         } catch (error) {
-           console.log(error)
+            console.log(error)
         }
     });
 
-/**
- * @description
- * @argument {String} projectName the project name of omni which you want create note
- * @argument {String} modelName   anki-note type
- */
 program
-    .command("OmniFocus-word [type] [deckName]")
-    .alias("word")
-    .description("create notes directly from OmniFocus project")
-    .action(async (modelName = "single", deckName = "erratum") => {
-        const result = await getTasks("word");
-        const cards = createWordCards(result, modelName, deckName);
+    .command("om <type> <scope> [deckname]")
+    .description("create notes directly from OmniFocus")
+    .action(async (type, scope, deckName = 'big-bang') => {
+        const result = await getTasks(type, scope);
+        const cards = result.map(data => ({
+            modelName: 'keypoint',
+            fields: {
+                front: marked(data.name),
+                back: marked(data.note),
+            },
+            tags: data.tags,
+            deckName,
+        }))
         const res = await addNotes(cards);
-        console.log(res);
-
-        if (res.filter(card => card !== null).length) {
-            log(
-                chalk.green.bold(
-                    `Cards created in deck: ${deckName} by type: ${modelName}`
-                )
-            );
-        } else {
-            log(
-                chalk.red(
-                    "Something goes wrong, please check the code or OmniFocus!"
-                )
-            );
-        }
+        console.log(res)
     });
 
 const createCards = data => {
@@ -158,28 +146,7 @@ program
         });
     });
 
-program
-    .command("OmniFocus-big-bang")
-    .alias("b2")
-    .description("create notes from OmniFocus know project")
-    .action(async () => {
-        const projectName = "big-bang";
-        const result = await getTasks(projectName);
-        const cards = createKeyPointCards(result, projectName);
-        const res = await addNotes(cards);
-        console.log(res);
-    });
 
-program
-    .command("toefl")
-    .description("create Anki notes from OmniFocus tofel project")
-    .action(async () => {
-        const projectName = "toefl";
-        const result = await getTasks(projectName);
-        const cards = createKeyPointCards(result, projectName);
-        const res = await addNotes(cards);
-        console.log(res);
-    });
 
 program
     .command('pipe')
