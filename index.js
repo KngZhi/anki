@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { promisify } = require('util')
 const { exec } = require("child_process");
 const program = require("commander");
 const marked = require("marked");
@@ -30,7 +31,9 @@ const {
     addNotes,
     findNotes,
     getNotesInfo,
-    updateNotes
+    updateNotes,
+    changeDeck,
+    findCards,
 } = require("./lib/anki-sdk");
 const { getTasks } = require("./lib/omni-sdk");
 const { fileParse } = require("./lib/taskpaper");
@@ -202,6 +205,18 @@ program
         const result = await getNotesInfo(notesId);
         console.log(errorList);
         await updateNotes(list);
+    });
+
+program
+    .command("daily [query] [amount]")
+    .description("move card from big-stack to big-bang")
+    .action(async (query, amount = 20) => {
+        if (!query) {
+            console.error('missing query')
+            return
+        }
+        const notesId = (await findCards(query)).slice(0, amount)
+        await changeDeck(notesId, 'big-bang');
     });
 
 program.parse(process.argv);
