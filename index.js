@@ -4,7 +4,6 @@ const path = require("path");
 const { promisify } = require('util')
 const { exec } = require("child_process");
 const program = require("commander");
-const marked = require("marked");
 const chalk = require("chalk");
 const stringSimilarity = require("string-similarity");
 const asynces = require('async')
@@ -13,6 +12,7 @@ const asyncFile = promisify(fs.readFile);
 
 const getFilePath = filename => path.resolve(process.cwd(), filename);
 
+const marked = require("marked");
 marked.setOptions({
     renderer: new marked.Renderer(),
     highlight: function (code) {
@@ -36,20 +36,7 @@ const {
     findCards,
 } = require("./lib/anki-sdk");
 const { getTasks } = require("./lib/omni-sdk");
-const { fileParse } = require("./lib/taskpaper");
-
-const createKeyPointCards = (tasks, deckName) => {
-    const cards = tasks.map(task => ({
-        deckName,
-        modelName: "keypoint",
-        fields: {
-            question: marked(task.name),
-            answer: marked(task.note)
-        },
-        tags: []
-    }));
-    return cards;
-};
+const fileParse = require("./src/parser/index");
 
 program
     .version(pkg.version)
@@ -137,9 +124,9 @@ program
             return console.error("can not find the file in current directory");
         fs.readFile(filepath, "utf8", async (err, data) => {
             try {
-                const cards = createCards(fileParse(data));
-                const res = await addNotes(cards);
-                console.log("initial result", res);
+                const notes = fileParse(data)
+                console.log(notes)
+                const res = await addNotes(notes);
             } catch (error) {
                 console.error(error);
             }
