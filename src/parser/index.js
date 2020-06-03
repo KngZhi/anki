@@ -62,7 +62,7 @@ function fileParse(text) {
     let result = {
         meta,
         notes: notes
-            .map(note => processLine(note, meta.terms))
+            .map(note => processLine(note, meta))
             .map(n => processNote(n, meta)),
     }
 
@@ -70,13 +70,21 @@ function fileParse(text) {
     return result.notes
 }
 
-// TODO: processLine and repalce Terms
-function processLine(note, terms) {
+function processLine(note, meta) {
     const { front, back } = note
-    let Ts = Object.keys(terms).map(term => `[${term}]`)
+    const { abbrs } = meta
+
+    function abbrReplace(string) {
+        const rx = /\[([^\]]+)]/g;
+
+        return string.replace(rx, (match, p1) => {
+            return abbrs[p1] || match
+        })
+    }
+
     return {
-        back,
-        front,
+        back: back.map(abbrReplace),
+        front: front.map(abbrReplace),
     }
 }
 
