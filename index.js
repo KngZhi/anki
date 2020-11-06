@@ -91,7 +91,6 @@ program
             tags: data.tags,
             deckName,
         }))
-        console.log(cards)
         const res = await addNotes(cards);
         console.log(res)
     });
