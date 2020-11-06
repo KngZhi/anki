@@ -37,6 +37,7 @@ const {
 } = require("./lib/anki-sdk");
 const { getTasks } = require("./lib/omni-sdk");
 const fileParse = require("./src/parser/index");
+const processOmniLeetcode = require('./lib/note-processor')
 
 program
     .version(pkg.version)
@@ -81,7 +82,7 @@ program
     .description("create notes directly from OmniFocus")
     .action(async (type, scope, deckName = 'big-bang') => {
         const result = await getTasks(type, scope);
-        const cards = result.map(data => ({
+        const cards = result.map(processOmniLeetcode).map(data => ({
             modelName: 'keypoint',
             fields: {
                 front: marked(data.name),
@@ -90,6 +91,7 @@ program
             tags: data.tags,
             deckName,
         }))
+        console.log(cards)
         const res = await addNotes(cards);
         console.log(res)
     });
