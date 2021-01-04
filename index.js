@@ -82,17 +82,22 @@ program
     .description("create notes directly from OmniFocus")
     .action(async (type, scope, deckName = 'big-bang') => {
         const result = await getTasks(type, scope);
-        const cards = result.map(processOmniLeetcode).map(data => ({
-            modelName: 'keypoint',
-            fields: {
-                front: marked(data.name),
-                back: marked(data.note),
-            },
-            tags: data.tags,
-            deckName,
-        }))
+        const cards = result.map(data => {
+            if (data.tags.includes('lc')) {
+                return processOmniLeetcode(data)
+            } else {
+                return {
+                    modelName: 'keypoint',
+                    fields: {
+                        front: (data.name),
+                        back: (data.note),
+                    },
+                    tags: data.tags,
+                    deckName,
+                }
+            }
+        })
         const res = await addNotes(cards);
-        console.log(res)
     });
 
 const createCards = data => {
