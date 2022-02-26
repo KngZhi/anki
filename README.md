@@ -1,14 +1,43 @@
 # Anki-util
 
-## DEBUG Road
+## Example about creating cards bulkly
 
-- =UnhandledPromiseRejectionWarning: TypeError: Cannot destructure property `result` of 'undefined' or 'null'.=
-    可能是因为服务器的端口被占用了.
-    - =lsof -i:8765= 这个是 AnkiConnect 的使用端口,查看是否被占用.
-    - 如果是则杀死改进程, 然后重启 Anki 即可 =kill \${lsof -t -i:8764}=
+### Using yaml as global configuration, tags and deck
 
-## TODO Road Map
+```yaml
+deckName: Default
+tags: ['foo', 'far', 'bar']
+```
 
+### Basic note types
+
+Most frequently(90%) note are
+1. create **basic** note, which only contain front and back field
+    1. **[CAVEAT]** you have to make a newline so the below part would consider as a back field. Otherwise it would belong to front side
+    2. If you want create front field with multiple line, you can check [2] example
+2. [3] create **cloze** note, no matter how many cloze you got
+3. [4] I want *x* cloze in the same card, rather than seperately
+
+```md
+- The population of China at 2020? [1]
+
+1.4 billion.
+
+- Give me some reasons about why China could feed so much [2]
+  people at Qing Dynasty
+
+I dont know for sure
+
+- there are {{1.4 billions}} people living in China at {{2020}} [3]
+
+you can also add note for **cloze** note
+
+- there are {{1:1.4 billions}} people living in {{China}} at {{1:2020}} [4]
+```
+
+## Road Map
+
+- [ ] combine *taskpaper.js* and *parser/index.js*
 - [ ] 用编译器创建语法，然后输出
 - [ ] 批量创建 cloze 卡片
 - [ ] 查询 Note 类型，储存在本地，每隔几次再批量更新
@@ -21,3 +50,9 @@
     - 对定义进行引用
 - 如何处理错题？
 - 也可以渲染成 Markdown 进行预览
+
+## Frequently DEBUG Questions
+
+- =UnhandledPromiseRejectionWarning: TypeError: Cannot destructure property `result` of 'undefined' or 'null'.=
+    - using `lsof -i:8765` found out whether the port of AnkiConnect is occupied
+    - if it is occupied, restart Anki or `kill \${lsof -t -i:8764}`
