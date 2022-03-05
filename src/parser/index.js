@@ -38,6 +38,13 @@ function fileParse(text) {
             i = j
 
             meta = yaml.safeLoad(result)
+            if (!meta.deckName) {
+                meta.deckName = 'Default'
+            }
+
+            if (!meta.deck) {
+                meta.deck = 'Default'
+            }
         }
 
         if (/^- /.test(line)) {
