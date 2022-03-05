@@ -47,7 +47,7 @@ function fileParse(text) {
             }
             let j = i + 1
             let nextLine = datalines[j]
-            while (!/^- /.test(nextLine) && j < len) {
+            while (!/^(-|(#{1,})) /.test(nextLine) && j < len) {
                 note.back.push(nextLine)
                 j++
                 nextLine = datalines[j]
