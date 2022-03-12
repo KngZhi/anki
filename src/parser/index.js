@@ -1,9 +1,10 @@
 const yaml = require('js-yaml');
 const marked = require("marked");
+const highlight = require('highlight')
 marked.setOptions({
     renderer: new marked.Renderer(),
     highlight: function (code) {
-        return require("highlight.js").highlightAuto(code).value;
+        return highlight.highlight(code)
     },
     gfm: true,
     tables: true,
@@ -81,9 +82,12 @@ function processLine(note, meta) {
     const { front, back } = note
     const { abbrs } = meta
 
+    if (!abbrs) return note
+
     function abbrReplace(string) {
         const rx = /\[([^\]]+)]/g;
 
+        // FIXME: if string has `const x = [1,2,3]` would cause error
         return string.replace(rx, (match, p1) => {
             return abbrs[p1] || match
         })
@@ -120,7 +124,7 @@ function processNote(note, meta) {
     }
 
     return {
-        deckName: meta.deck,
+        deckName: meta.deck || meta.deckName,
         tags: meta.tags,
         options: {
             allowDuplicate: false
