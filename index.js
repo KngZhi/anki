@@ -38,6 +38,7 @@ const {
 const { getTasks } = require("./lib/omni-sdk");
 const fileParse = require("./src/parser/index");
 const processOmniLeetcode = require('./lib/note-processor')
+const taskpapaer = require('./lib/taskpaper')
 
 program
     .version(pkg.version)
@@ -122,7 +123,7 @@ const createCards = data => {
 };
 
 program
-    .command("file <filename>")
+    .command("file <filepath>")
     .description("create notes directly from erratum file")
     .action(async filename => {
         const filepath = path.resolve(process.cwd(), filename);
@@ -132,7 +133,7 @@ program
             try {
                 const notes = fileParse(data)
                 console.log(notes)
-                const res = await addNotes(notes);
+                // const res = await addNotes(notes);
             } catch (error) {
                 console.error(error);
             }
@@ -140,10 +141,9 @@ program
     });
 
 
-
 program
-    .command('pipe')
-    .action(() => {
+    .command('pipe [type]')
+    .action((type) => {
         process.stdin.resume();
         process.stdin.setEncoding('utf8');
         let result = ''
@@ -163,20 +163,20 @@ program
     .action(async query => {
         const notesId = await findNotes(query);
         const result = await getNotesInfo(notesId);
-        console.log(errorList);
+        console.log(result);
         await updateNotes(list);
     });
 
 program
-    .command("daily [query] [amount]")
-    .description("move card from big-stack to big-bang")
-    .action(async (query, amount = 20) => {
+    .command("daily [query] [amount] [target]")
+    .description("move card from query to target deck")
+    .action(async (query, amount = 20, target) => {
         if (!query) {
             console.error('missing query')
             return
         }
         const notesId = (await findCards(query)).slice(0, amount)
-        await changeDeck(notesId, 'big-bang');
+        await changeDeck(notesId, target);
     });
 
 program.parse(process.argv);
