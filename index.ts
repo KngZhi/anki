@@ -1,21 +1,20 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const path = require("path");
-const { promisify } = require('util')
-const { exec } = require("child_process");
-const program = require("commander");
-const chalk = require("chalk");
-const stringSimilarity = require("string-similarity");
-const asynces = require('async')
+import fs from 'fs'
+import path from "path"
+import { promisify } from 'util'
+import { exec } from "child_process"
+import program from "commander"
+import asynces from 'async'
 
 const asyncFile = promisify(fs.readFile);
 
 const getFilePath = filename => path.resolve(process.cwd(), filename);
 
-const marked = require("marked");
+import marked from "marked"
+
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function (code) {
+    highlight: function(code: string) {
         return require("highlight.js").highlightAuto(code).value;
     },
     gfm: true,
@@ -24,21 +23,20 @@ marked.setOptions({
 });
 
 // const pkg = require("./package.json");
-const log = console.log;
-const { getWords, } = require("./lib/dict");
-const { queryDef } = require('./lib/query-dict')
-const {
+import { getWords, } from "./lib/dict"
+import { queryDef } from './lib/query-dict'
+import {
     addNotes,
     findNotes,
     getNotesInfo,
     updateNotes,
     changeDeck,
     findCards,
-} = require("./lib/anki-sdk");
-const { getTasks } = require("./lib/omni-sdk");
-const fileParse = require("./src/parser/index");
-const processOmniLeetcode = require('./lib/note-processor')
-const taskpapaer = require('./lib/taskpaper')
+} from "./lib/anki-sdk"
+import { getTasks } from "./lib/omni-sdk"
+import fileParse from "./src/parser/index"
+import processOmniLeetcode from './lib/note-processor'
+import { constants } from 'crypto'
 
 program
     // .version(pkg.version)
@@ -132,8 +130,8 @@ program
         fs.readFile(filepath, "utf8", async (err, data) => {
             try {
                 const notes = fileParse(data)
-                console.log(notes)
-                // const res = await addNotes(notes);
+                const res = await addNotes(notes);
+                console.log(res)
             } catch (error) {
                 console.error(error);
             }
@@ -147,7 +145,7 @@ program
         process.stdin.resume();
         process.stdin.setEncoding('utf8');
         let result = ''
-        process.stdin.on('data', function (data) {
+        process.stdin.on('data', function(data) {
             result += data
         });
         process.stdin.on('end', async () => {
