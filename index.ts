@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import fs from 'fs'
 import path from "path"
 import { promisify } from 'util'
@@ -8,7 +9,7 @@ import asynces from 'async'
 
 const asyncFile = promisify(fs.readFile);
 
-const getFilePath = filename => path.resolve(process.cwd(), filename);
+const getFilePath = (filename: string) => path.resolve(process.cwd(), filename);
 
 import marked from "marked"
 
@@ -36,7 +37,6 @@ import {
 import { getTasks } from "./lib/omni-sdk"
 import fileParse from "./src/parser/index"
 import processOmniLeetcode from './lib/note-processor'
-import { constants } from 'crypto'
 
 program
     // .version(pkg.version)
@@ -124,10 +124,11 @@ program
     .command("file <filepath>")
     .description("create notes directly from erratum file")
     .action(async filename => {
-        const filepath = path.resolve(process.cwd(), filename);
+        const filepath: string = path.resolve(process.cwd(), filename);
         if (!fs.lstatSync(filepath).isFile())
             return console.error("can not find the file in current directory");
         fs.readFile(filepath, "utf8", async (err, data) => {
+            if (err) throw err
             try {
                 const notes = fileParse(data)
                 const res = await addNotes(notes);
@@ -160,9 +161,9 @@ program
     .description("update notes according to the query and conditions")
     .action(async query => {
         const notesId = await findNotes(query);
-        const result = await getNotesInfo(notesId);
+        const result = getNotesInfo(notesId);
         console.log(result);
-        await updateNotes(list);
+        await updateNotes(notesId);
     });
 
 program
