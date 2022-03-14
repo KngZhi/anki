@@ -11,7 +11,7 @@
     "commander": "^2.16.0",
     "compromise": "^11.12.4",
     "debug": "^3.1.0",
-    "follow-redirects": "^1.4.1",
+    "follow-redirects": "^1.14.8",
     "highlight": "^0.2.4",
     "highlight.js": "^11.4.0",
     "inquirer": "^6.2.0",
