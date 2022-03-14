@@ -1,4 +1,5 @@
 * README
+
 ** Example about creating cards bulkly
 *** Using yaml as global configuration, tags and deck
 #+begin_src yaml
@@ -32,15 +33,16 @@ you can also add note for **cloze** note
 #+end_example
 
 ** Road Map
-*** TODO Convert As Typescript package
+
+*** TODO Convert As Typescript package [0/3]
 
 - [ ] define note type
-- [ ] resolve file command
+- [ ] file command
 - [ ] refactor =parser.js= to =parser.ts=
 
 *** Further Features
 
-- [ ] using marked parser instead of using regex to parse md file
+- [ ] using marked parser instead of using regex to parse markdown file
 - [ ] store anki notes id at original file
 - [ ] using /pangu.js/ to format input data
 
@@ -49,8 +51,6 @@ you can also add note for **cloze** note
   - 建立对定义的拆解，包括对每个部分的细化，以及 cloze
   - 也可以进行删除
   - 对定义进行引用
-
-- 如何处理错题？
 
 - 也可以渲染成 Markdown 进行预览
 
