@@ -1,27 +1,28 @@
-const yaml = require('js-yaml');
-const marked = require("marked");
-const highlight = require('highlight')
-marked.setOptions({
-    renderer: new marked.Renderer(),
-    highlight: function (code) {
-        return highlight.highlight(code)
-    },
-    gfm: true,
-    tables: true,
-    breaks: true
-});
+import yaml from 'js-yaml'
+import marked from 'marked'
+
+// import highlight = require('highlight');
+// marked.setOptions({
+//     renderer: new marked.Renderer(),
+//     highlight: function(code) {
+//         return highlight.highlight(code)
+//     },
+//     gfm: true,
+//     tables: true,
+//     breaks: true
+// });
 
 
-const { createCloze } = require('./createModel')
+import { createCloze } from './createModel'
 
 const DASH = '---'
 
-function fileParse(text) {
+function fileParse(text: string) {
     const datalines = text.split('\n')
     const len = datalines.length
 
     let meta = {}
-    let notes = []
+    const notes = []
 
     let i = 0
     while (i < len) {
@@ -38,7 +39,7 @@ function fileParse(text) {
             }
             i = j
 
-            meta = yaml.safeLoad(result)
+            const meta = yaml.load(result)
             if (!meta.deckName) {
                 meta.deckName = 'Default'
             }
@@ -108,7 +109,7 @@ function markedFields(fields) {
 }
 
 function processNote(note, meta) {
-    const { front, back } = note
+    const { front } = note
     let result = null
 
     if (/\{\{.*?\}\}/.test(front)) {
