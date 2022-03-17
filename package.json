@@ -2,7 +2,7 @@
   "name": "ankify",
   "version": "1.0.0",
   "description": "For quickly make markdown to anki card",
-  "main": "build/index.js",
+  "main": "build/index",
   "source": "./index.ts",
   "dependencies": {
     "@types/node": "^17.0.21",
@@ -40,6 +40,8 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.1",
     "@commitlint/config-conventional": "^16.2.1",
+    "@types/async": "^3.2.12",
+    "@types/js-yaml": "^4.0.5",
     "chai": "^4.1.2",
     "dumper": "^1.0.12",
     "dumper.js": "^1.1.1",
