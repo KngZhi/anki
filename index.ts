@@ -11,17 +11,17 @@ const asyncFile = promisify(fs.readFile);
 
 const getFilePath = (filename: string) => path.resolve(process.cwd(), filename);
 
-import marked from "marked"
+// import marked from "marked"
 
-marked.setOptions({
-    renderer: new marked.Renderer(),
-    highlight: function(code: string) {
-        return require("highlight.js").highlightAuto(code).value;
-    },
-    gfm: true,
-    tables: true,
-    breaks: true
-});
+// marked.setOptions({
+//     renderer: new marked.Renderer(),
+//     highlight: function(code) {
+//         return require("highlight.js").highlightAuto(code).value;
+//     },
+//     gfm: true,
+//     tables: true,
+//     breaks: true
+// });
 
 // const pkg = require("./package.json");
 import { getWords, } from "./lib/dict"
@@ -38,50 +38,53 @@ import { getTasks } from "./lib/omni-sdk"
 import fileParse from "./src/parser/index"
 import processOmniLeetcode from './lib/note-processor'
 
+import { Note, Tags, OmniFocusData } from './src/types'
+
 program
     // .version(pkg.version)
     // .description(pkg.description)
     .usage("[options] <command> [..]");
 
-program
-    .command("pre-word <filename>")
-    .alias("pre")
-    .description("create text for further use")
-    .action(async filename => {
-        const result = await asyncFile(getFilePath(filename), "utf8");
-        const preNotes = result.split("\n\n").filter(l => !l.includes('@')).map(sentence => {
-            const words = getWords(sentence);
-            return words.map(word => ({ word, sentence }));
-        })
-            .reduce((res, val) => res.concat(val), [])
-            .map(task => ({ ...task, sentence: task.sentence.replace(/`/g, '') }))
-        const failedList = []
-        try {
-            const final = await asynces.mapSeries(preNotes, async (note) => {
-                try {
-                    const { word, sentence, } = note
-                    console.log('current query word: ', word)
-                    const shortdef = (await queryDef(word)).slice(0, 3).reduce((defs, item) => defs.concat(item.shortdef), [])
-                    return { word, sentence, shortdef }
-                } catch (error) {
-                    console.error('something error', error)
-                    failedList.push(note)
-                }
-            })
+// program
+//     .command("pre-word <filename>")
+//     .alias("pre")
+//     .description("create text for further use")
+//     .action(async filename => {
+//         const result = await asyncFile(getFilePath(filename), "utf8");
+//         const preNotes = result.split("\n\n").filter(l => !l.includes('@')).map(sentence => {
+//             const words = getWords(sentence);
+//             return words.map(word => ({ word, sentence }));
+//         })
+//             .reduce((res, val) => res.concat(val), [])
+//             .map(task => ({ ...task, sentence: task.sentence.replace(/`/g, '') }))
+//         const failedList = []
+//         try {
+//             const final = await asynces.mapSeries(preNotes, async (note) => {
+//                 try {
+//                     const { word, sentence, } = note
+//                     console.log('current query word: ', word)
+//                     const shortdef = (await queryDef(word)).slice(0, 3).reduce((defs, item) => defs.concat(item.shortdef), [])
+//                     return { word, sentence, shortdef }
+//                 } catch (error) {
+//                     console.error('something error', error)
+//                     failedList.push(note)
+//                 }
+//             })
 
-            const output = final.map(item => `${item.sentence}\n\n${item.shortdef.join('\n')}`).join('\n\n')
-            fs.writeFile(getFilePath(filename), output, () => exec(`code ${getFilePath(filename)}`));
-        } catch (error) {
-            console.log(error)
-        }
-    });
+//             const output = final.map(item => `${item.sentence}\n\n${item.shortdef.join('\n')}`).join('\n\n')
+//             fs.writeFile(getFilePath(filename), output, () => exec(`code ${getFilePath(filename)}`));
+//         } catch (error) {
+//             console.log(error)
+//         }
+//     });
+
 
 program
     .command("om <type> <scope> [deckname]")
     .description("create notes directly from OmniFocus")
     .action(async (type, scope, deckName = 'big-bang') => {
         const result = await getTasks(type, scope);
-        const cards = result.map(data => {
+        const cards = result.map(( data: OmniFocusData ) => {
             if (data.tags.includes('lc')) {
                 return processOmniLeetcode(data)
             } else {
@@ -97,28 +100,8 @@ program
             }
         })
         const res = await addNotes(cards);
+        console.log(res)
     });
-
-const createCards = data => {
-    const cards = data.map(task => {
-        const { tags, modelName, deckName, options, ...fields } = task;
-
-        if (modelName !== "toefl") {
-            Object.keys(fields).forEach(key => {
-                fields[key] = marked(fields[key]);
-            });
-        }
-
-        return {
-            tags,
-            deckName,
-            modelName,
-            fields,
-            options,
-        };
-    });
-    return cards;
-};
 
 program
     .command("file <filepath>")
@@ -141,8 +124,8 @@ program
 
 
 program
-    .command('pipe [type]')
-    .action((type) => {
+    .command('pipe')
+    .action(() => {
         process.stdin.resume();
         process.stdin.setEncoding('utf8');
         let result = ''
