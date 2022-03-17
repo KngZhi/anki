@@ -2,7 +2,8 @@
   "name": "ankify",
   "version": "1.0.0",
   "description": "For quickly make markdown to anki card",
-  "main": "anki.js",
+  "main": "build/index.js",
+  "source": "./index.ts",
   "dependencies": {
     "@types/node": "^17.0.21",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
@@ -44,11 +45,15 @@
     "dumper.js": "^1.1.1",
     "eslint": "^8.11.0",
     "husky": "^7.0.4",
+    "microbundle": "^0.14.2",
     "mocha": "^5.1.1"
   },
   "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch",
     "lint": "eslint . --ext .ts --ignore-path .gitignore",
     "lint-and-fix": "yarn lint --fix",
+    "local": "yarn global add",
     "test": "mocha",
     "test:w": "mocha -w"
   },
