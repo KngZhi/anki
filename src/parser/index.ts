@@ -1,6 +1,8 @@
 import yaml from 'js-yaml'
-import marked from 'marked'
+// import marked from 'marked'
 
+import { createCloze } from './createModel'
+import { Note, Fields, DeckName, Tag } from './../types'
 // import highlight = require('highlight');
 // marked.setOptions({
 //     renderer: new marked.Renderer(),
@@ -12,34 +14,38 @@ import marked from 'marked'
 //     breaks: true
 // });
 
-
-import { createCloze } from './createModel'
+interface Metadata {
+    deck: DeckName;
+    deckName: DeckName;
+    tags: Array<Tag>;
+    abbrs: Record<string, string>;
+}
 
 const DASH = '---'
 
 function fileParse(text: string) {
-    const datalines = text.split('\n')
-    const len = datalines.length
+    const lines: string[] = text.split('\n')
+    const len = lines.length
 
-    let meta = {}
+    let meta: Metadata
     const notes = []
 
     let i = 0
     while (i < len) {
-        const line = datalines[i]
+        const line = lines[i]
 
         if (i === 0 && line === DASH) {
             let j = i + 1
-            let nextLine = datalines[j]
+            let nextLine = lines[j]
             let result = ''
             while (nextLine !== DASH) {
                 result += nextLine + '\n'
                 j++
-                nextLine = datalines[j]
+                nextLine = lines[j]
             }
             i = j
 
-            const meta = yaml.load(result)
+            meta = yaml.load(result) as Metadata
             if (!meta.deckName) {
                 meta.deckName = 'Default'
             }
@@ -50,76 +56,67 @@ function fileParse(text: string) {
         }
 
         if (/^- /.test(line)) {
-            const note = {
-                front: [line.replace('-', '')],
-                back: []
-            }
+            const front = line.replace('-', '')
+            const backlines: string[] = []
             let j = i + 1
-            let nextLine = datalines[j]
+            let nextLine = lines[j]
             while (!/^(-|(#{1,})) /.test(nextLine) && j < len) {
-                note.back.push(nextLine)
+                backlines.push(nextLine)
                 j++
-                nextLine = datalines[j]
+                nextLine = lines[j]
             }
             i = j - 1
-            notes.push(note)
+            notes.push({ front, back: backlines.join('\n')})
         }
 
         i++
     }
 
-    let result = {
-        meta,
-        notes: notes
-            .map(note => processLine(note, meta))
-            .map(n => processNote(n, meta)),
-    }
-
-
-    return result.notes
+    return notes.map(n => processNote(n, meta))
 }
 
-function processLine(note, meta) {
-    const { front, back } = note
-    const { abbrs } = meta
+// TODO: dealing with abbrs
+// function processLine(fields: Fields, meta: Metadata) {
+//     const { front, back } = fields
+//     const { abbrs } = meta
 
-    if (!abbrs) return note
+//     if (!abbrs) return fields
 
-    function abbrReplace(string) {
-        const rx = /\[([^\]]+)]/g;
+//     function abbrReplace(string) {
+//         const rx = /\[([^\]]+)]/g;
 
-        // FIXME: if string has `const x = [1,2,3]` would cause error
-        return string.replace(rx, (match, p1) => {
-            return abbrs[p1] || match
-        })
-    }
+//         // FIXME: if string has `const x = [1,2,3]` would cause error
+//         return string.replace(rx, (match, p1) => {
+//             return abbrs[p1] || match
+//         })
+//     }
 
-    return {
-        back: back.map(abbrReplace),
-        front: front.map(abbrReplace),
-    }
-}
+//     return {
+//         back: back.map(abbrReplace),
+//         front: front.map(abbrReplace),
+//     }
+// }
 
-function markedFields(fields) {
-    const result = fields
-    Object.keys(result).forEach(key => {
-        result[key] = marked(result[key].join('\n'));
-    });
-    return result
-}
+// function markedFields(fields: Fields): Fields {
+//     const result = fields
+//     Object.keys(result).forEach(key => {
+//         result[key] = marked(result[key].join('\n'));
+//     });
+//     return result
+// }
 
-function processNote(note, meta) {
-    const { front } = note
+function processNote(fields: Fields, meta: Metadata): Note {
+    const { front } = fields
     let result = null
 
     if (/\{\{.*?\}\}/.test(front)) {
         result = {
-            fields: markedFields(createCloze(note)),
+            fields: createCloze(fields),
             modelName: 'cloze'
         }
     } else {
         result = {
-            fields: markedFields(note),
+            fields,
             modelName: 'keypoint'
         }
     }
@@ -134,4 +131,6 @@ function processNote(note, meta) {
     }
 }
 
-module.exports = fileParse
+export default fileParse
+
+// module.exports = fileparse
