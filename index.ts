@@ -23,7 +23,7 @@ marked.setOptions({
     breaks: true
 });
 
-const pkg = require("./package.json");
+// const pkg = require("./package.json");
 const log = console.log;
 const { getWords, } = require("./lib/dict");
 const { queryDef } = require('./lib/query-dict')
@@ -41,8 +41,8 @@ const processOmniLeetcode = require('./lib/note-processor')
 const taskpapaer = require('./lib/taskpaper')
 
 program
-    .version(pkg.version)
-    .description(pkg.description)
+    // .version(pkg.version)
+    // .description(pkg.description)
     .usage("[options] <command> [..]");
 
 program
