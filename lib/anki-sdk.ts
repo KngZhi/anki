@@ -257,7 +257,7 @@ async function findCards(query) {
 
 
 
-module.exports = {
+export {
     addNotes,
     addTags,
     getModelFieldNames,

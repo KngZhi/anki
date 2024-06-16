@@ -20,17 +20,6 @@ function clozeWords(text) {
     return list
 }
 
-function clozeWords(text) {
-    const list = text.split('\n').filter(line => line !== '').map(line => {
-        const fields = line.split(' ')
-        return {
-            word: fields[0],
-            cloze: clozeWord(fields[0]),
-            meaning: fields[1] || ''
-        }
-    })
-    return list
-}
 
 const createCloze = (note) => {
     console.log('creating Cloze')
@@ -47,7 +36,8 @@ const createCloze = (note) => {
     }
 }
 
-module.exports = {
-    clozeWord,
-    createCloze,
-}
+
+export {
+  clozeWord,
+  createCloze,
+};

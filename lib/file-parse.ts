@@ -32,6 +32,6 @@ const getSections = (scName, file) => {
 
 }
 
-module.exports = {
+export {
     getSections
 }

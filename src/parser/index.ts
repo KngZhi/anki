@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 // import marked from 'marked'
 
-import { createCloze } from './createModel'
+import { createCloze } from "./createModel";
 import { Note, Fields, DeckName, Tag } from './../types'
 // import highlight = require('highlight');
 // marked.setOptions({
